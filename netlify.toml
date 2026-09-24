@@ -1,0 +1,8 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/rosters.json"
+  [headers.values]
+    cache-control = "public, max-age=3600"
