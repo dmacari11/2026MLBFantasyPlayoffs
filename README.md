@@ -18,5 +18,5 @@ Anyone with the link can view. Making picks, undoing a pick or changing draft or
 
 ## Link previews
 `public/og-image.png` is the preview image shown when the link is shared. The tags in `index.html` point to
-`https://fantasy-mlb-playoffs.netlify.app/og-image.png`. If you pick a different Netlify site name, change that
+`https://mlbfantasyplayoffs.netlify.app/og-image.png`. If you pick a different Netlify site name, change that
 address in the two `og:image` / `twitter:image` lines to match.
