@@ -15,3 +15,8 @@ Dan vs Dio vs CK: a snake-draft fantasy league for the MLB postseason.
 4. Optional: Site configuration → Change site name (e.g. fantasy-mlb-playoffs → fantasy-mlb-playoffs.netlify.app).
 
 Anyone with the link can view. Making picks, undoing a pick or changing draft order asks for the PIN once per device.
+
+## Link previews
+`public/og-image.png` is the preview image shown when the link is shared. The tags in `index.html` point to
+`https://fantasy-mlb-playoffs.netlify.app/og-image.png`. If you pick a different Netlify site name, change that
+address in the two `og:image` / `twitter:image` lines to match.
