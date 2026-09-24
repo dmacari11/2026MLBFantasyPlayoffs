@@ -16,7 +16,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mlbfantasyplayoffs.netlify.app/og-image.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2728%27 fill=%27white%27 stroke=%27%231E2340%27 stroke-width=%274%27/%3E%3Cpath d=%27M14 13c7 6 9 13 9 19s-2 13-9 19M50 13c-7 6-9 13-9 19s2 13 9 19%27 fill=%27none%27 stroke=%27%23E63946%27 stroke-width=%273%27/%3E%3C/svg%3E">
-<style>*,*::before,*::after{box-sizing:border-box}html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>*,*::before,*::after{box-sizing:border-box}html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* phone draft: full names on drafted players, wrapping onto two lines */
+@media (max-width:640px){
+  .dteam .dslot.filled .fn,.dteam .dslot.next .fn{display:inline}
+  .dteam .dslot.filled .ln2,.dteam .dslot.next .ln2{display:none}
+  .dteam .dslot.filled .nm,.dteam .dslot.next .nm{white-space:normal;overflow:visible;text-overflow:clip;font-size:12px;line-height:1.15;overflow-wrap:break-word;word-break:normal}
+  .dteam .dslot.filled,.dteam .dslot.next{align-items:center;min-height:34px}
+  .dteam .dslot .slot{align-self:center}
+}
+</style>
 <title>2026 Fantasy MLB Playoffs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
