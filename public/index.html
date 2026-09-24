@@ -183,6 +183,7 @@ button,input,select{font:inherit;color:inherit}
 .cs td{font-family:var(--mono);font-size:14px}
 .cs td i{font-style:normal;font-family:var(--body);font-size:10px;font-weight:700;color:var(--muted);margin-left:3px;vertical-align:super}
 .cs td.nil,.rt td.nil{color:var(--muted)}
+.cs .sc{border-left:1.5px solid var(--rule);font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink)}
 .legend{display:flex;gap:6px}
 .key{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px}
 .key.win{background:var(--accent-soft);color:var(--accent-ink)}
@@ -392,12 +393,22 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .tmc b{font-size:14px}
   .rt{min-width:0}
   .rbtn{font-size:12.5px;padding:2px 0}
-  .csm td{font-family:var(--mono);font-size:14px}
-  .csm td.ckey{font-family:var(--body);font-weight:700;font-size:13px}
-  .csm td i{font-style:normal;font-family:var(--body);font-size:9.5px;font-weight:700;color:var(--muted);margin-left:2px;vertical-align:super}
-  .csm th .tmc{justify-content:flex-end;gap:5px}
-  .csm th .cn{font-size:12px;text-transform:none;letter-spacing:0;color:var(--ink)}
-  .csm tr.psep td{border-top:2px solid var(--accent)}
+  /* category totals: same sideways table, squeezed to fit */
+  .cs{min-width:0;table-layout:fixed}
+  .cs th,.cs td{padding:7px 0;text-align:center;overflow:hidden;text-overflow:clip}
+  .cs th{font-size:9px;letter-spacing:-.03em}
+  .cs td{font-family:var(--body);font-size:11.5px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .cs col.c-tm{width:26px}
+  .cs col.c-rate{width:34px}
+  .cs col.c-svh{width:28px}
+  .cs col.c-sc{width:40px}
+  .cs th.l,.cs td.l{padding-left:3px;text-align:left}
+  .cs thead tr:last-child th.l{font-size:0}
+  .cs td.l .tmc b{display:none}
+  .cs td.l .av{width:22px;height:22px;font-size:9px}
+  .cs tr.grp th{padding:6px 1px 2px;font-size:9px;letter-spacing:.06em}
+  .cs td.sc{font-family:var(--display);font-size:12.5px;letter-spacing:0;padding-right:3px}
+  .cs th.sc{font-size:8.5px}
   .ycard .note{padding:0 12px 12px;font-size:12px}
   .legend{display:none}
   /* game logs as a list */
@@ -773,9 +784,9 @@ function renderStandings(){
       const won=CATS.filter(c=>r.res[c.k]==='W').map(c=>c.k).join(', ')||'—';
       return `<tr${i===0&&(r.w||r.t)?' class="first"':''}><td class="l rk">${rank}</td><td class="l"><span class="tmc">${av(r.m)}<span><b>${r.m}</b><small>${esc(MANAGER_TEAMS[r.m])}</small></span></span></td><td class="rec">${rec(r)}</td><td>${pct(r)}</td><td>${gb(r)}</td><td class="hide-s won">${won}</td></tr>`;}).join('')
   }</tbody></table>`;
-  const cs=`<table class="yt cs"><thead><tr class="grp"><th></th><th colspan="5" class="gh">Batting</th><th colspan="5" class="gh sep">Pitching</th></tr><tr><th class="l">Team</th>${CATS.map(c=>`<th class="${c.sep?'sep':''}">${c.k}</th>`).join('')}</tr></thead><tbody>${
+  const cs=`<table class="yt cs"><colgroup><col class="c-tm">${CATS.map(c=>`<col${c.fmt?' class="c-rate"':c.k==='SV+H'?' class="c-svh"':''}>`).join('')}<col class="c-sc"></colgroup><thead><tr class="grp"><th></th><th colspan="5" class="gh">Batting</th><th colspan="5" class="gh sep">Pitching</th><th></th></tr><tr><th class="l">Team</th>${CATS.map(c=>`<th class="${c.sep?'sep':''}">${c.k}</th>`).join('')}<th class="sc">Score</th></tr></thead><tbody>${
     rows.map(r=>`<tr><td class="l"><span class="tmc sm">${av(r.m)}<b>${r.m}</b></span></td>${CATS.map(c=>{const v=r.vals[c.k]; const txt=c.fmt?c.fmt(v):v; const rs=r.res[c.k];
-      return `<td class="${c.sep?'sep ':''}${rs==='W'?'win':rs==='T'?'tie':''}${v==null?' nil':''}">${txt}</td>`;}).join('')}</tr>`).join('')
+      return `<td class="${c.sep?'sep ':''}${rs==='W'?'win':rs==='T'?'tie':''}${v==null?' nil':''}">${txt}</td>`;}).join('')}<td class="sc">${rec(r)}</td></tr>`).join('')
   }</tbody></table>`;
   // round-by-round records
   const recs={}; const cols=[...ROUNDS.map(x=>x.id),'ALL'];
@@ -808,10 +819,7 @@ function renderStandings(){
   </section>
   <section class="ycard">
     <header class="yhead"><h2>Category totals <span class="sub">${esc(label)}</span></h2><span class="legend"><span class="key win">Leader</span><span class="key tie">Tied for lead</span></span></header>
-    <div class="scroll only-wide">${cs}</div>
-    <table class="yt csm only-phone"><thead><tr><th class="l">Cat</th>${rows.map(r=>`<th><span class="tmc sm">${av(r.m)}<b class="cn">${r.m}</b></span></th>`).join('')}</tr></thead><tbody>${
-      CATS.map(c=>`<tr${c.sep?' class="psep"':''}><td class="l ckey">${c.k}</td>${rows.map(r=>{const v=r.vals[c.k]; const rs=r.res[c.k]; return `<td class="${rs==='W'?'win':rs==='T'?'tie':''}${v==null?' nil':''}">${c.fmt?c.fmt(v):v}</td>`;}).join('')}</tr>`).join('')
-    }</tbody></table>
+    <div class="scroll">${cs}</div>
   </section>
   <section class="ycard">
     <header class="yhead"><h2>Round by round</h2><span class="meta">Tap a record to view that round</span></header>
