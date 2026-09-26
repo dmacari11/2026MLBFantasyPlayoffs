@@ -655,6 +655,14 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .bt{justify-content:center;gap:4px;padding:0 4px}
 }
 .ball2 td.win{background:var(--win-cell)!important;color:var(--win-cell-ink)!important;font-weight:800}
+.ball2 td.blc{padding-top:6px;padding-bottom:6px}
+.ball2 td:not(.l),.ball2 th:not(.l){text-align:center}
+.ball2 th .tmc{justify-content:center!important}
+.blogo.rnd{width:34px;height:34px;border-radius:50%;display:inline-grid;vertical-align:middle;box-shadow:0 0 0 1.5px var(--rule)}
+.blogo.rnd img{width:72%;height:72%}
+.ball2 td.win .blogo.rnd{box-shadow:0 0 0 2.5px var(--good)}
+.ball2 td.loss .blogo.rnd{opacity:.4;box-shadow:0 0 0 2px var(--bad)}
+@media (max-width:640px){ .blogo.rnd{width:30px;height:30px} .blogo.rnd em{font-size:8.5px} }
 .ball2 td.loss{color:var(--bad);text-decoration:line-through}
 .ball2 td{font-family:var(--display);font-weight:600}
 .ball2 td.l{font-family:var(--body);font-weight:600;color:var(--muted);font-size:13px}
@@ -1143,7 +1151,7 @@ function renderBracket(){
   const warn=!locked&&stale?`<p class="bwarn">The standings moved — ${stale} of ${m}’s picks no longer fit the bracket. Please pick those series again.</p>`:'';
   const all=`<table class="yt ball2"><thead><tr><th class="l">Series</th>${MANAGERS.map(x=>`<th><span class="tmc sm">${av(x)}<b class="cn">${x}</b></span></th>`).join('')}</tr></thead><tbody>${
     BSLOTS.map(s=>`<tr${s.k==='NL-WC2'||s.k==='WS'?' class="psep"':''}><td class="l">${s.round==='CS'||s.round==='WS'?s.lbl:`${s.lg} ${RN[s.round].short} ${s.lbl}`}</td>${MANAGERS.map(x=>{ const id=bPrune(br.picks[x]||{},br.field)[s.k]; if(id==null) return '<td class="nil">–</td>';
-      const st=bStatus(res,s.round,id); return `<td class="${st}">${esc((T[id]||{}).abbr||'?')}</td>`; }).join('')}</tr>`).join('')
+      const st=bStatus(res,s.round,id); const t=T[id]||{id,abbr:'?',name:''}; return `<td class="${st} blc" title="${esc(t.name||t.abbr)}">${logo(t).replace('class="blogo"','class="blogo rnd"')}</td>`; }).join('')}</tr>`).join('')
   }</tbody></table>`;
   return `<section class="ycard"><header class="yhead"><h2>Bracket pool</h2><span class="meta">1 · 2 · 4 · 8 pts by round</span></header>${board}</section>
   <section class="ycard"><header class="yhead"><h2>${m}’s bracket <span class="sub">${made}/${BSLOTS.length} picked</span></h2></header>${who}${status}${warn}<div class="brk">${rounds}</div></section>
