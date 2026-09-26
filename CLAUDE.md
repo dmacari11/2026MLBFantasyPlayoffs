@@ -21,6 +21,14 @@ The owner (Dan) is not a developer. Explain changes in plain language, keep his 
 - Standings = W-L-T record, sorted by wins, then ties. Pct (shown like Yahoo) = (W + T/2) / decided categories. GB uses Yahoo's formula.
 - Standings are shown overall (all rounds combined) and per round, plus a round-by-round records table.
 
+## Bracket pool (Bracket tab)
+- A separate side game: each manager picks the winner of all 11 postseason series (4 WC, 4 DS, 2 LCS, WS). Points: **WC 1, DS 2, LCS 4, WS 8**, awarded only when the picked team actually wins that series.
+- Bracket (2026 format, 6 teams per league): seeds 1–3 = division winners by record, 4–6 = wild cards. WC: 3v6, 4v5. DS: 1 vs 4/5 winner, 2 vs 3/6 winner. Then LCS, WS.
+- Before the playoffs the field follows live MLB standings (`/standings?leagueId=103,104&standingsTypes=regularSeason`). Picks lock at the first Wild Card first pitch (earliest non-TBD `gameType=F` gameDate; fallback 2026-09-29T16:00Z) or once any postseason game is live; the field is then frozen in Blobs key `bracket-field`.
+- Blobs keys: `bracket-picks-<Manager>` = `{slot: teamId}` (slots `AL-WC1` 3v6, `AL-WC2` 4v5, `AL-DS1`, `AL-DS2`, `AL-CS`, same for NL, `WS`); `bracket-mlb` = cached standings field + series results (refreshed at most every 60 s). Picks that no longer fit the bracket are pruned (server on save, client on display).
+- Series winners are computed from final postseason games (wins needed: WC 2, DS 3, LCS 4, WS 4). Like stats.mjs, only tested against simulated MLB data; confirm with real data once standings/postseason games exist.
+- Everyone's picks are visible to all three managers.
+
 ## Architecture
 ```
 public/index.html        whole front end (HTML + CSS + vanilla JS, no build step)
@@ -28,6 +36,7 @@ public/rosters.json      { TEAM: [ {id, name, pos, s, role?} ] }, 30 teams, 40-m
 public/og-image.png      1200×630 link-preview image (original art; do NOT use MLB logos)
 netlify/functions/league.mjs   GET/POST /api/league: picks + draft order, stored in Netlify Blobs
 netlify/functions/stats.mjs    GET /api/stats: live box scores from MLB Stats API, cached in Blobs
+netlify/functions/bracket.mjs  GET/POST /api/bracket: bracket pool (field from standings, picks, series results)
 netlify.toml, package.json     (@netlify/blobs is the only dependency)
 ```
 - **Blobs store `league`:** key `state` = `{picks:[...], orders:{WC:[..]}, updatedAt}`; key `stats` = `{lines, fetchedAt, sig}`; keys `box-<gamePk>` = cached boxscores of *final* games.
@@ -38,7 +47,7 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - **Client polling:** league every 6 s on the Draft tab (45 s elsewhere), stats every 60 s. Polling pauses while the tab is hidden.
 
 ## Front end notes (public/index.html)
-- Tabs: **Standings, Rosters, Draft** (a Rules tab was removed on purpose).
+- Tabs: **Standings, Rosters, Draft, Bracket** (a Rules tab was removed on purpose).
 - Before the first real pick, Standings/Rosters show clearly labelled **example data** (`DEMO`).
 - Rendering is string templates → `#main.innerHTML`. `render()` **skips while a `<select>` in #main is focused** (phones close native pickers when the element is replaced) and catches up on focusout. Keep this.
 - Only text inputs get focus restored after render, never selects.

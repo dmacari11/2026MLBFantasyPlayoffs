@@ -369,7 +369,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   ul.only-phone{display:block}
   .scroll{overflow-x:visible}
   /* page tabs: four equal columns, no sideways scroll */
-  .tabs{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;gap:0}
+  .tabs{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;gap:0}
   .tabs button{padding:9px 2px;font-size:13.5px;text-align:center}
   /* round selectors: fixed grid */
   .bar .chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));width:100%;overflow:visible;gap:5px}
@@ -586,6 +586,63 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
   #pickform .seg label{padding:10px 2px}
   .bar{margin-bottom:8px}
 }
+
+/* ---------- bracket pool ---------- */
+.bnote{margin:10px 16px 12px;font-size:14px;color:var(--muted);line-height:1.45}
+.bnote b{color:var(--ink)}
+.bwarn{margin:0 16px 12px;padding:9px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn-ink);font-size:14px;font-weight:700}
+.bwho{padding-top:12px}
+.bst .rec{font-family:var(--display);font-weight:700;font-size:19px}
+.brk{padding:0 16px 16px;display:grid;gap:18px}
+.bround h3{margin:0 0 8px;font-family:var(--display);font-size:17px;font-weight:700;display:flex;gap:8px;align-items:baseline}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bcol{display:grid;gap:10px;align-content:start}
+.bcol.bws{grid-column:1/-1;max-width:420px;width:100%;justify-self:center}
+.blg{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);text-align:center;border-bottom:3px solid var(--primary);padding-bottom:3px}
+.bm{border:1.5px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--surface)}
+.bl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:5px 10px;background:var(--sunk)}
+.bt{display:flex;align-items:center;gap:8px;width:100%;min-height:46px;padding:6px 10px;border:0;border-top:1px solid var(--soft-rule,var(--rule));background:var(--surface);color:var(--ink);font:inherit;text-align:left}
+.bl+.bt{border-top:0}
+button.bt{cursor:pointer}
+button.bt:hover{background:var(--row-hover,var(--sunk))}
+.bt.tbd{color:var(--muted);font-size:13px;font-style:italic}
+.bs{font-family:var(--mono);font-size:12px;color:var(--muted);width:14px;text-align:center;flex:none}
+.bn{display:grid;line-height:1.2;min-width:0;flex:1}
+.bn b{font-family:var(--display);font-size:16px;font-weight:700}
+.bn small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b1{display:flex;align-items:baseline;gap:6px;min-width:0}
+.bn i{font-style:normal;font-weight:800;color:var(--good);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+.bw{font-family:var(--mono);font-weight:700;font-size:14px}
+.bck,.bpt,.bx{flex:none;font-weight:800;font-size:13px;border-radius:999px;padding:2px 8px}
+.bck{background:var(--c);color:#fff}
+.bpt{background:var(--good);color:#fff}
+.bx{color:var(--bad)}
+.bt.sel{background:color-mix(in srgb,var(--c) 14%,var(--surface));box-shadow:inset 4px 0 0 var(--c)}
+.bt.sel.win{background:var(--win-cell);box-shadow:inset 4px 0 0 var(--good)}
+.bt.sel.loss{background:var(--sunk);box-shadow:inset 4px 0 0 var(--bad)}
+.bt.sel.loss .bn b{text-decoration:line-through;text-decoration-thickness:2px}
+.ball2 td.win{background:var(--win-cell)!important;color:var(--win-cell-ink)!important;font-weight:800}
+.ball2 td.loss{color:var(--bad);text-decoration:line-through}
+.ball2 td{font-family:var(--display);font-weight:600}
+.ball2 td.l{font-family:var(--body);font-weight:600;color:var(--muted);font-size:13px}
+.ball2 td.nil{color:var(--muted)}
+.ball2 tr.psep td{border-top:2px solid var(--primary)}
+.ball2 th .tmc{justify-content:flex-end;gap:6px}
+.ball2 th .cn{text-transform:none;letter-spacing:0;color:var(--ink);font-size:13px}
+@media (max-width:640px){
+  .bnote{margin:8px 12px 10px;font-size:13.5px}
+  .bwarn{margin:0 12px 10px}
+  .brk{padding:0 10px 12px;gap:14px}
+  .bgrid{gap:8px}
+  .bcol{gap:8px}
+  .bt{gap:6px;padding:6px 7px;min-height:44px}
+  .bl{padding:4px 7px;font-size:10px}
+  .bn b{font-size:15px}
+  .bn small{font-size:11px}
+  .bn i{font-size:9px;letter-spacing:.02em}
+  .bck,.bpt,.bx{font-size:11.5px;padding:2px 6px}
+  .bst td,.bst th{padding-left:6px;padding-right:6px}
+}
 </style>
 </head>
 <body>
@@ -602,6 +659,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
     <button role="tab" id="tab-standings" data-tab="standings">Standings</button>
     <button role="tab" id="tab-rosters" data-tab="rosters"><span class="lg">Rosters &amp; stats</span><span class="sh">Rosters</span></button>
     <button role="tab" id="tab-draft" data-tab="draft"><span class="lg">Draft room</span><span class="sh">Draft</span></button>
+    <button role="tab" id="tab-bracket" data-tab="bracket"><span class="lg">Bracket pool</span><span class="sh">Bracket</span></button>
   </nav>
 
   <main id="main"></main>
@@ -640,9 +698,10 @@ const store=(k,v)=>{try{ if(v===undefined) return localStorage.getItem(k); local
 
 /* ---------- state ---------- */
 let db=null, canWrite=false, loaded={picks:false,lines:false};
-const S={picks:[],lines:[],league:{orders:{}},sync:null,rosters:{}};
+const S={picks:[],lines:[],league:{orders:{}},sync:null,rosters:{},br:null};
 const UI={pkTeam:'',pkPlayer:'',pkSlot:'',tab:store('os.tab')||'standings', standRound:'ALL', rosterRound:null, draftRound:null, open:new Set(), err:''};
-if(!['standings','rosters','draft'].includes(UI.tab)) UI.tab='standings';
+if(!['standings','rosters','draft','bracket'].includes(UI.tab)) UI.tab='standings';
+UI.bm=store('os.bm')||'Dan';
 
 /* ---------- example league (shown only until the first real pick) ---------- */
 const DEMO=(()=>{
@@ -969,6 +1028,81 @@ function renderDraft(){
   return `<div class="bar">${roundChips(round,'data-dr',false)}<span class="meta">3 hitters · 2 starters · 1 reliever each</span></div>
     <div class="draft"><div>${side}${orderHtml}</div>${board}</div>`;
 }
+/* ---------- bracket pool ---------- */
+const BPTS={WC:1,DS:2,CS:4,WS:8};
+const BSLOTS=[];
+['AL','NL'].forEach(lg=>{
+  BSLOTS.push({k:`${lg}-WC2`,round:'WC',lg,from:[4,5],lbl:'4 vs 5'},{k:`${lg}-WC1`,round:'WC',lg,from:[3,6],lbl:'3 vs 6'},
+    {k:`${lg}-DS1`,round:'DS',lg,from:[1,`${lg}-WC2`],lbl:'1 vs 4/5'},{k:`${lg}-DS2`,round:'DS',lg,from:[2,`${lg}-WC1`],lbl:'2 vs 3/6'},
+    {k:`${lg}-CS`,round:'CS',lg,from:[`${lg}-DS1`,`${lg}-DS2`],lbl:`${lg}CS`});
+});
+BSLOTS.push({k:'WS',round:'WS',lg:null,from:['AL-CS','NL-CS'],lbl:'World Series'});
+const BSLOT=Object.fromEntries(BSLOTS.map(s=>[s.k,s]));
+// bracket order (earlier rounds first) so pruning sees feeders before the slots they feed
+const BORDER=['WC','DS','CS','WS'].flatMap(r=>BSLOTS.filter(s=>s.round===r));
+function bTeamsIn(s,field,picks){ return s.from.map(f=>typeof f==='number'?((field[s.lg]||[])[f-1]||{}).id??null:(picks[f]??null)); }
+function bPrune(picks,field){ const out={}; if(!field) return out; BORDER.forEach(s=>{ const v=picks[s.k]; if(v!=null&&bTeamsIn(s,field,out).includes(v)) out[s.k]=v; }); return out; }
+function bTeams(field){ const m={}; if(field) ['AL','NL'].forEach(lg=>(field[lg]||[]).forEach(t=>m[t.id]={...t,lg})); return m; }
+function bResults(series){
+  const won={WC:new Set(),DS:new Set(),CS:new Set(),WS:new Set()}, out=new Set();
+  (series||[]).forEach(s=>{ if(s.winner){ won[s.round].add(s.winner); s.teams.forEach(t=>{ if(t!==s.winner) out.add(t); }); } });
+  return {won,out};
+}
+// 'win' = picked team won that round's series, 'loss' = it's been knocked out, '' = still pending
+function bStatus(res,round,id){ return res.won[round].has(id)?'win':(res.out.has(id)?'loss':''); }
+function bScore(br,m){
+  const picks=bPrune(br.picks[m]||{},br.field); const res=bResults(br.series);
+  let pts=0,max=0,right=0,n=0;
+  Object.entries(picks).forEach(([k,id])=>{ const r=BSLOT[k].round; const st=bStatus(res,r,id); n++;
+    if(st==='win'){ pts+=BPTS[r]; max+=BPTS[r]; right++; } else if(!st) max+=BPTS[r]; });
+  return {m,pts,max,right,n};
+}
+function bSeries(br,round,a,b){ return (br.series||[]).find(s=>s.round===round&&s.teams.includes(a)&&s.teams.includes(b)); }
+function renderBracket(){
+  const br=S.br; const av=m=>`<span class="av c-${m}">${INITIALS[m]}</span>`;
+  if(!br||!br.field) return `<section class="ycard"><header class="yhead"><h2>Bracket pool</h2></header><p class="bnote">${br?'The playoff field isn’t available yet — MLB standings will load here shortly.':'Loading the playoff field…'}</p></section>`;
+  const T=bTeams(br.field); const res=bResults(br.series); const locked=br.locked;
+  const m=MANAGERS.includes(UI.bm)?UI.bm:'Dan';
+  const raw=br.picks[m]||{}; const picks=bPrune(raw,br.field);
+  const stale=Object.keys(raw).filter(k=>!(k in picks)).length;
+  const lockTxt=new Date(br.lockAt).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  const scores=MANAGERS.map(x=>bScore(br,x)).sort((a,b)=>b.pts-a.pts||b.max-a.max);
+  const board=`<table class="yt bst"><thead><tr><th class="l">Rank</th><th class="l">Team</th><th>Points</th><th>Correct</th><th>Max</th></tr></thead><tbody>${
+    scores.map(s=>`<tr><td class="l rk">${scores.findIndex(x=>x.pts===s.pts)+1}</td><td class="l"><span class="tmc sm">${av(s.m)}<b>${s.m}</b></span></td><td class="rec">${s.pts}</td><td>${s.right}/${s.n}</td><td>${s.max}</td></tr>`).join('')
+  }</tbody></table>`;
+  const who=`<div class="ytabs bwho" role="tablist">${MANAGERS.map(x=>`<button class="ytab" data-bm="${x}" aria-selected="${x===m}">${x}</button>`).join('')}</div>`;
+  const teamBtn=(s,id,other)=>{
+    if(id==null){ const src=BSLOT[s.from[other]]; return `<div class="bt tbd">Winner of ${src?(src.round==='CS'?src.lbl:src.lg+' '+src.lbl):'—'}</div>`; }
+    const t=T[id]||{abbr:'?',name:'',seed:''}; const sel=picks[s.k]===id; const st=sel?bStatus(res,s.round,id):'';
+    const ser=bSeries(br,s.round,...bTeamsIn(s,br.field,picks)); const wins=ser?`<span class="bw">${ser.wins[id]||0}</span>`:'';
+    const mark=st==='win'?`<span class="bpt">+${BPTS[s.round]}</span>`:(st==='loss'?'<span class="bx">✗</span>':(sel?'<span class="bck">✓</span>':''));
+    const inner=`<span class="bs">${t.seed}</span><span class="bn"><span class="b1"><b>${esc(t.abbr)}</b>${!locked&&t.clinched?'<i title="Clinched a playoff spot">clinched</i>':''}</span><small>${esc(t.name)}</small></span>${wins}${mark}`;
+    const cls=`bt${sel?' sel c-'+m:''}${st?' '+st:''}`;
+    return locked?`<div class="${cls}">${inner}</div>`:`<button class="${cls}" data-bpick="${s.k}|${id}">${inner}</button>`;
+  };
+  const card=s=>{ const pair=bTeamsIn(s,br.field,picks); return `<div class="bm"><div class="bl">${s.lg&&s.round!=='CS'?s.lg+' · ':''}${s.lbl}</div>${teamBtn(s,pair[0],0)}${teamBtn(s,pair[1],1)}</div>`; };
+  const rounds=ROUNDS.map(r=>{ const ss=BSLOTS.filter(s=>s.round===r.id);
+    const cols=r.id==='WS'?`<div class="bcol bws">${ss.map(card).join('')}</div>`:['AL','NL'].map(lg=>`<div class="bcol"><div class="blg">${lg}</div>${ss.filter(s=>s.lg===lg).map(card).join('')}</div>`).join('');
+    return `<div class="bround"><h3>${r.name} <span class="meta">${BPTS[r.id]} pt${BPTS[r.id]>1?'s':''} each</span></h3><div class="bgrid">${cols}</div></div>`; }).join('');
+  const made=Object.keys(picks).length;
+  const status=locked?`<p class="bnote">Brackets locked at first pitch. Points land as each series ends.</p>`
+    :`<p class="bnote">Tap the team you think wins each series. Picks save instantly and can be changed until the first Wild Card pitch (<b>${esc(lockTxt)}</b>). Seeds follow the live standings until then.</p>`;
+  const warn=!locked&&stale?`<p class="bwarn">The standings moved — ${stale} of ${m}’s picks no longer fit the bracket. Please pick those series again.</p>`:'';
+  const all=`<table class="yt ball2"><thead><tr><th class="l">Series</th>${MANAGERS.map(x=>`<th><span class="tmc sm">${av(x)}<b class="cn">${x}</b></span></th>`).join('')}</tr></thead><tbody>${
+    BSLOTS.map(s=>`<tr${s.k==='NL-WC2'||s.k==='WS'?' class="psep"':''}><td class="l">${s.round==='CS'||s.round==='WS'?s.lbl:`${s.lg} ${RN[s.round].short} ${s.lbl}`}</td>${MANAGERS.map(x=>{ const id=bPrune(br.picks[x]||{},br.field)[s.k]; if(id==null) return '<td class="nil">–</td>';
+      const st=bStatus(res,s.round,id); return `<td class="${st}">${esc((T[id]||{}).abbr||'?')}</td>`; }).join('')}</tr>`).join('')
+  }</tbody></table>`;
+  return `<section class="ycard"><header class="yhead"><h2>Bracket pool</h2><span class="meta">1 · 2 · 4 · 8 pts by round</span></header>${board}</section>
+  <section class="ycard"><header class="yhead"><h2>${m}’s bracket <span class="sub">${made}/${BSLOTS.length} picked</span></h2></header>${who}${status}${warn}<div class="brk">${rounds}</div></section>
+  <section class="ycard"><header class="yhead"><h2>Everyone’s picks</h2></header><div class="scroll">${all}</div></section>`;
+}
+async function saveBracket(m,picks){
+  const r=await fetch('/api/bracket',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({manager:m,picks,pin:getPin()})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){ const e=new Error(d.error||'That pick didn’t save.'); e.code='rejected'; throw e; }
+  S.br=d; render();
+}
+async function loadBracket(){ try{ S.br=await getJSON('/api/bracket'); render(); }catch(e){} }
 function renderRules(){
   return `<div class="rules">
   <div class="panel"><h3>The format</h3>
@@ -1015,7 +1149,7 @@ function render(){
   const snap=snapshotInputs();
   renderTrack();
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===UI.tab));
-  const R={standings:renderStandings,rosters:renderRosters,draft:renderDraft,rules:renderRules}[UI.tab];
+  const R={standings:renderStandings,rosters:renderRosters,draft:renderDraft,bracket:renderBracket,rules:renderRules}[UI.tab];
   $('#main').innerHTML=R();
   restoreInputs(snap);
 }
@@ -1035,6 +1169,15 @@ async function touchSync(by){}
 document.addEventListener('click',async e=>{
   const t=e.target.closest('button'); if(!t) return;
   if(t.dataset.tab){ UI.tab=t.dataset.tab; store('os.tab',UI.tab); UI.err=''; render(); return; }
+  if(t.dataset.bm){ UI.bm=t.dataset.bm; store('os.bm',UI.bm); render(); return; }
+  if(t.dataset.bpick){
+    const br=S.br; if(!br||br.locked) return; const [k,v]=t.dataset.bpick.split('|'); const id=+v; const m=MANAGERS.includes(UI.bm)?UI.bm:'Dan';
+    const cur=bPrune(br.picks[m]||{},br.field); const next={...cur};
+    if(next[k]===id) delete next[k]; else next[k]=id;
+    const picks=bPrune(next,br.field); const before=br.picks[m];
+    br.picks={...br.picks,[m]:picks}; render();
+    try{ await saveBracket(m,picks); }catch(err){ br.picks={...br.picks,[m]:before}; render(); writeFailed(err); loadBracket(); }
+    return; }
   if(t.dataset.sr){ UI.standRound=t.dataset.sr; render(); return; }
   if(t.dataset.rr){ UI.rosterRound=t.dataset.rr; render(); return; }
   if(t.dataset.dr){ UI.draftRound=t.dataset.dr; UI.err=''; render(); return; }
@@ -1135,18 +1278,20 @@ async function loadLeague(){ try{ applyLeague(await getJSON('/api/league')); db=
 async function loadStats(){ try{ const d=await getJSON('/api/stats'); S.lines=d.lines||[]; S.sync=d.fetchedAt?{at:new Date(d.fetchedAt).toISOString(),by:'auto'}:null; loaded.lines=true; render(); }catch(e){} }
 render();
 (async()=>{
+  loadBracket();
   try{ const r=await getJSON('/rosters.json'); S.rosters=r; }catch(e){}
   try{ applyLeague(await getJSON('/api/league')); db=true; canWrite=true; }catch(e){ db=null; loaded.picks=true; render(); return; }
   loadStats();
-  let lastL=Date.now(), lastS=Date.now();
+  let lastL=Date.now(), lastS=Date.now(), lastB=Date.now();
   setInterval(()=>{
     if(document.hidden) return;
     const now=Date.now();
     const leagueEvery=UI.tab==='draft'?6000:45000;
     if(now-lastL>=leagueEvery){ lastL=now; loadLeague(); }
     if(now-lastS>=60000){ lastS=now; loadStats(); }
+    if(now-lastB>=(UI.tab==='bracket'?30000:120000)){ lastB=now; loadBracket(); }
   },2000);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadLeague(); loadStats(); } });
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadLeague(); loadStats(); loadBracket(); } });
 })();
 })();
 </script>
