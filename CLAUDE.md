@@ -28,6 +28,8 @@ The owner (Dan) is not a developer. Explain changes in plain language, keep his 
 - Blobs keys: `bracket-picks-<Manager>` = `{slot: teamId}` (slots `AL-WC1` 3v6, `AL-WC2` 4v5, `AL-DS1`, `AL-DS2`, `AL-CS`, same for NL, `WS`); `bracket-mlb` = cached standings field + series results (refreshed at most every 60 s). Picks that no longer fit the bracket are pruned (server on save, client on display).
 - Series winners are computed from final postseason games (wins needed: WC 2, DS 3, LCS 4, WS 4). Like stats.mjs, only tested against simulated MLB data; confirm with real data once standings/postseason games exist.
 - Everyone's picks are visible to all three managers.
+- Layout is a real two-sided bracket: AL on the left (WC → DS → LCS), NL mirrored on the right, World Series + champion pick in the middle, with CSS connector lines. On phones it shows logos only (seed in the corner), no sideways scrolling.
+- Team logos load from MLB's CDN `https://www.mlbstatic.com/team-logos/<teamId>.svg` (owner asked for real logos in the bracket). If a logo fails, the abbreviation shows instead. The no-MLB-logos rule still applies to og-image.png.
 
 ## Architecture
 ```

@@ -593,34 +593,67 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
 .bwarn{margin:0 16px 12px;padding:9px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn-ink);font-size:14px;font-weight:700}
 .bwho{padding-top:12px}
 .bst .rec{font-family:var(--display);font-weight:700;font-size:19px}
-.brk{padding:0 16px 16px;display:grid;gap:18px}
-.bround h3{margin:0 0 8px;font-family:var(--display);font-size:17px;font-weight:700;display:flex;gap:8px;align-items:baseline}
-.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.bcol{display:grid;gap:10px;align-content:start}
-.bcol.bws{grid-column:1/-1;max-width:420px;width:100%;justify-self:center}
-.blg{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);text-align:center;border-bottom:3px solid var(--primary);padding-bottom:3px}
-.bm{border:1.5px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--surface)}
-.bl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:5px 10px;background:var(--sunk)}
-.bt{display:flex;align-items:center;gap:8px;width:100%;min-height:46px;padding:6px 10px;border:0;border-top:1px solid var(--soft-rule,var(--rule));background:var(--surface);color:var(--ink);font:inherit;text-align:left}
-.bl+.bt{border-top:0}
+.brk{padding:4px 16px 18px}
+.bk{--g:22px;--row:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.2fr) repeat(3,minmax(0,1fr));column-gap:var(--g);grid-template-rows:auto auto calc(var(--row)*4 + 64px)}
+.bklg{grid-column:span 3;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:3px solid var(--primary);padding-bottom:4px;margin-bottom:6px}
+.bkh{text-align:center;font-family:var(--display);font-weight:700;font-size:14px;line-height:1.15;padding-bottom:8px}
+.bkh small{display:block;font-family:var(--body);font-size:11px;font-weight:700;color:var(--muted)}
+.bkc{display:flex;flex-direction:column;justify-content:space-around;position:relative;min-width:0}
+.bm{position:relative;border:1.5px solid var(--rule);border-radius:10px;background:var(--surface)}
+.bm>.bt:first-child{border-radius:9px 9px 0 0}
+.bm>.bt:last-child{border-radius:0 0 9px 9px}
+/* connector lines: AL flows right toward the World Series, NL flows left */
+.bkc.al .bm::after,.bkc.nl .bm::after{content:"";position:absolute;top:50%;width:var(--g);border-top:1.5px solid var(--rule)}
+.bkc.al .bm::after{left:100%}
+.bkc.nl .bm::after{right:100%}
+.bkc.r-DS .bm::after{width:calc(var(--g)/2)}
+.bkc.al.r-DS::before,.bkc.nl.r-DS::before{content:"";position:absolute;top:25%;bottom:25%;border-left:1.5px solid var(--rule)}
+.bkc.al.r-DS::before{right:calc(var(--g)/-2)}
+.bkc.nl.r-DS::before{left:calc(var(--g)/-2)}
+.bkc.r-CS .bm::before{content:"";position:absolute;top:50%;width:calc(var(--g)/2);border-top:1.5px solid var(--rule)}
+.bkc.al.r-CS .bm::before{right:100%}
+.bkc.nl.r-CS .bm::before{left:100%}
+.bkc.ws{justify-content:center}
+.bkc.ws .bm{border-width:2px;border-color:var(--primary)}
+.bwsl{position:absolute;left:0;right:0;bottom:calc(50% + var(--row) + 8px);text-align:center;font-family:var(--display);font-weight:700;font-size:16px;line-height:1.1}
+.bwsl small{display:block;font-family:var(--body);font-size:11px;color:var(--muted)}
+.bchamp{position:absolute;left:0;right:0;top:calc(50% + var(--row) + 10px);display:flex;align-items:center;justify-content:center;gap:8px}
+.bchamp small{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bchamp b{font-family:var(--display);font-size:16px}
+.bchamp .blogo{width:34px;height:34px}
+.bt{display:flex;align-items:center;gap:6px;width:100%;height:var(--row);padding:0 8px 0 6px;border:0;background:var(--surface);color:var(--ink);font:inherit;text-align:left;position:relative}
+.bt+.bt{border-top:1px solid var(--soft-rule,var(--rule))}
 button.bt{cursor:pointer}
 button.bt:hover{background:var(--row-hover,var(--sunk))}
-.bt.tbd{color:var(--muted);font-size:13px;font-style:italic}
-.bs{font-family:var(--mono);font-size:12px;color:var(--muted);width:14px;text-align:center;flex:none}
-.bn{display:grid;line-height:1.2;min-width:0;flex:1}
-.bn b{font-family:var(--display);font-size:16px;font-weight:700}
-.bn small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.b1{display:flex;align-items:baseline;gap:6px;min-width:0}
-.bn i{font-style:normal;font-weight:800;color:var(--good);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
-.bw{font-family:var(--mono);font-weight:700;font-size:14px}
-.bck,.bpt,.bx{flex:none;font-weight:800;font-size:13px;border-radius:999px;padding:2px 8px}
-.bck{background:var(--c);color:#fff}
+.bt.tbd{color:var(--muted)}
+.bt.tbd .blogo{background:var(--sunk);border:1.5px dashed var(--rule)}
+.bt.tbd .bnm{font-size:12px;font-style:italic}
+.bs{font-family:var(--mono);font-size:11px;color:var(--muted);width:10px;text-align:center;flex:none}
+.blogo{width:28px;height:28px;flex:none;border-radius:8px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.blogo img{width:84%;height:84%;object-fit:contain;display:block}
+.blogo em{display:none;font-style:normal;font-family:var(--display);font-weight:700;font-size:10px;color:#1E2340;letter-spacing:-.02em}
+.blogo.nologo img{display:none}
+.blogo.nologo em{display:block}
+.bnm{flex:1;min-width:0;display:flex;align-items:baseline;gap:4px;overflow:hidden}
+.bnm b{font-family:var(--display);font-size:15px;font-weight:700}
+.bnm i{font-style:normal;font-weight:800;color:var(--good);font-size:11px}
+.bw{font-family:var(--mono);font-weight:700;font-size:13px}
+.bck,.bpt,.bx{position:absolute;right:-7px;top:50%;transform:translateY(-50%);z-index:1;font-weight:800;font-size:11px;line-height:18px;border-radius:999px;padding:0 6px}
+.bck{display:none}
+.bx{background:var(--surface);box-shadow:0 0 0 1.5px var(--bad)}
 .bpt{background:var(--good);color:#fff}
 .bx{color:var(--bad)}
-.bt.sel{background:color-mix(in srgb,var(--c) 14%,var(--surface));box-shadow:inset 4px 0 0 var(--c)}
+.bt.sel{background:color-mix(in srgb,var(--c) 16%,var(--surface));box-shadow:inset 4px 0 0 var(--c)}
 .bt.sel.win{background:var(--win-cell);box-shadow:inset 4px 0 0 var(--good)}
 .bt.sel.loss{background:var(--sunk);box-shadow:inset 4px 0 0 var(--bad)}
-.bt.sel.loss .bn b{text-decoration:line-through;text-decoration-thickness:2px}
+.bt.sel.loss .bnm b{text-decoration:line-through;text-decoration-thickness:2px}
+.bt.sel.loss .blogo{opacity:.45}
+/* mid-size screens: drop the abbreviations beside logos */
+@media (max-width:980px){
+  .bk{--g:14px}
+  .bnm,.bw{display:none}
+  .bt{justify-content:center;gap:4px;padding:0 4px}
+}
 .ball2 td.win{background:var(--win-cell)!important;color:var(--win-cell-ink)!important;font-weight:800}
 .ball2 td.loss{color:var(--bad);text-decoration:line-through}
 .ball2 td{font-family:var(--display);font-weight:600}
@@ -632,15 +665,28 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
 @media (max-width:640px){
   .bnote{margin:8px 12px 10px;font-size:13.5px}
   .bwarn{margin:0 12px 10px}
-  .brk{padding:0 10px 12px;gap:14px}
-  .bgrid{gap:8px}
-  .bcol{gap:8px}
-  .bt{gap:6px;padding:6px 7px;min-height:44px}
-  .bl{padding:4px 7px;font-size:10px}
-  .bn b{font-size:15px}
-  .bn small{font-size:11px}
-  .bn i{font-size:9px;letter-spacing:.02em}
-  .bck,.bpt,.bx{font-size:11.5px;padding:2px 6px}
+  .brk{padding:2px 8px 12px}
+  .bk{--g:7px;--row:36px;grid-template-rows:auto auto calc(var(--row)*4 + 96px)}
+  .bklg{font-size:9.5px;letter-spacing:.04em}
+  .bkh{font-size:11.5px;padding-bottom:6px}
+  .bkh small{font-size:9.5px}
+  .bm{border-radius:8px}
+  .bm>.bt:first-child{border-radius:7px 7px 0 0}
+  .bm>.bt:last-child{border-radius:0 0 7px 7px}
+  .bt{padding:0 1px;gap:0;justify-content:center}
+  .bs{position:absolute;left:1px;top:1px;font-size:8.5px;width:auto;line-height:1}
+  .blogo{width:26px;height:26px;border-radius:6px}
+  .blogo em{font-size:9px}
+  .bpt,.bx{right:-4px;top:-3px;transform:none;font-size:8.5px;padding:0 3px;line-height:13px}
+  .bt.sel{box-shadow:inset 0 0 0 2px var(--c)}
+  .bt.sel.win{box-shadow:inset 0 0 0 2px var(--good)}
+  .bt.sel.loss{box-shadow:inset 0 0 0 2px var(--bad)}
+  .bwsl{font-size:12px;bottom:calc(50% + var(--row) + 6px)}
+  .bwsl small{font-size:9.5px}
+  .bchamp{flex-direction:column;gap:3px;top:calc(50% + var(--row) + 8px);text-align:center}
+  .bchamp .blogo{width:30px;height:30px}
+  .bchamp small{font-size:8.5px;letter-spacing:.04em}
+  .bchamp b{font-size:13px}
   .bst td,.bst th{padding-left:6px;padding-right:6px}
 }
 </style>
@@ -1071,19 +1117,26 @@ function renderBracket(){
     scores.map(s=>`<tr><td class="l rk">${scores.findIndex(x=>x.pts===s.pts)+1}</td><td class="l"><span class="tmc sm">${av(s.m)}<b>${s.m}</b></span></td><td class="rec">${s.pts}</td><td>${s.right}/${s.n}</td><td>${s.max}</td></tr>`).join('')
   }</tbody></table>`;
   const who=`<div class="ytabs bwho" role="tablist">${MANAGERS.map(x=>`<button class="ytab" data-bm="${x}" aria-selected="${x===m}">${x}</button>`).join('')}</div>`;
-  const teamBtn=(s,id,other)=>{
-    if(id==null){ const src=BSLOT[s.from[other]]; return `<div class="bt tbd">Winner of ${src?(src.round==='CS'?src.lbl:src.lg+' '+src.lbl):'—'}</div>`; }
-    const t=T[id]||{abbr:'?',name:'',seed:''}; const sel=picks[s.k]===id; const st=sel?bStatus(res,s.round,id):'';
+  const logo=t=>`<span class="blogo"><img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" alt="" onerror="this.parentNode.classList.add('nologo')"><em>${esc(t.abbr)}</em></span>`;
+  const teamBtn=(s,id)=>{
+    if(id==null) return `<div class="bt tbd"><span class="blogo"></span><span class="bnm">TBD</span></div>`;
+    const t=T[id]||{id,abbr:'?',name:'',seed:''}; const sel=picks[s.k]===id; const st=sel?bStatus(res,s.round,id):'';
     const ser=bSeries(br,s.round,...bTeamsIn(s,br.field,picks)); const wins=ser?`<span class="bw">${ser.wins[id]||0}</span>`:'';
     const mark=st==='win'?`<span class="bpt">+${BPTS[s.round]}</span>`:(st==='loss'?'<span class="bx">✗</span>':(sel?'<span class="bck">✓</span>':''));
-    const inner=`<span class="bs">${t.seed}</span><span class="bn"><span class="b1"><b>${esc(t.abbr)}</b>${!locked&&t.clinched?'<i title="Clinched a playoff spot">clinched</i>':''}</span><small>${esc(t.name)}</small></span>${wins}${mark}`;
-    const cls=`bt${sel?' sel c-'+m:''}${st?' '+st:''}`;
-    return locked?`<div class="${cls}">${inner}</div>`:`<button class="${cls}" data-bpick="${s.k}|${id}">${inner}</button>`;
+    const inner=`<span class="bs">${t.seed}</span>${logo(t)}<span class="bnm"><b>${esc(t.abbr)}</b>${!locked&&t.clinched?'<i title="Clinched a playoff spot">✓</i>':''}</span>${wins}${mark}`;
+    const cls=`bt${sel?' sel c-'+m:''}${st?' '+st:''}`; const tip=`${t.seed?'('+t.seed+') ':''}${t.name||t.abbr}`;
+    return locked?`<div class="${cls}" title="${esc(tip)}">${inner}</div>`:`<button class="${cls}" title="Pick the ${esc(tip)}" data-bpick="${s.k}|${id}">${inner}</button>`;
   };
-  const card=s=>{ const pair=bTeamsIn(s,br.field,picks); return `<div class="bm"><div class="bl">${s.lg&&s.round!=='CS'?s.lg+' · ':''}${s.lbl}</div>${teamBtn(s,pair[0],0)}${teamBtn(s,pair[1],1)}</div>`; };
-  const rounds=ROUNDS.map(r=>{ const ss=BSLOTS.filter(s=>s.round===r.id);
-    const cols=r.id==='WS'?`<div class="bcol bws">${ss.map(card).join('')}</div>`:['AL','NL'].map(lg=>`<div class="bcol"><div class="blg">${lg}</div>${ss.filter(s=>s.lg===lg).map(card).join('')}</div>`).join('');
-    return `<div class="bround"><h3>${r.name} <span class="meta">${BPTS[r.id]} pt${BPTS[r.id]>1?'s':''} each</span></h3><div class="bgrid">${cols}</div></div>`; }).join('');
+  const card=s=>{ const pair=bTeamsIn(s,br.field,picks); return `<div class="bm">${teamBtn(s,pair[0])}${teamBtn(s,pair[1])}</div>`; };
+  const col=(lg,r)=>`<div class="bkc ${lg?lg.toLowerCase():'ws'} r-${r}">${BSLOTS.filter(s=>s.round===r&&s.lg===lg).map(card).join('')}</div>`;
+  const champ=picks.WS!=null&&T[picks.WS]?T[picks.WS]:null;
+  const wsCol=`<div class="bkc ws r-WS"><div class="bwsl">World Series<small>${BPTS.WS} pts</small></div>${card(BSLOT.WS)}<div class="bchamp">${champ?`${logo(champ)}<span><small>Champion</small><b>${esc(champ.abbr)}</b></span>`:'<span><small>Champion</small><b>—</b></span>'}</div></div>`;
+  const hd=(r)=>`<div class="bkh"><span class="lg">${RN[r].name}</span><span class="sh">${RN[r].short}</span><small>${BPTS[r]} pt${BPTS[r]>1?'s':''}</small></div>`;
+  const rounds=`<div class="bk">
+    <div class="bklg al">American League</div><div></div><div class="bklg nl">National League</div>
+    ${hd('WC')}${hd('DS')}${hd('CS')}<div class="bkh"></div>${hd('CS')}${hd('DS')}${hd('WC')}
+    ${col('AL','WC')}${col('AL','DS')}${col('AL','CS')}${wsCol}${col('NL','CS')}${col('NL','DS')}${col('NL','WC')}
+  </div>`;
   const made=Object.keys(picks).length;
   const status=locked?`<p class="bnote">Brackets locked at first pitch. Points land as each series ends.</p>`
     :`<p class="bnote">Tap the team you think wins each series. Picks save instantly and can be changed until the first Wild Card pitch (<b>${esc(lockTxt)}</b>). Seeds follow the live standings until then.</p>`;
