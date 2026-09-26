@@ -39,6 +39,7 @@ public/og-image.png      1200×630 link-preview image (original art; do NOT use 
 netlify/functions/league.mjs   GET/POST /api/league: picks + draft order, stored in Netlify Blobs
 netlify/functions/stats.mjs    GET /api/stats: live box scores from MLB Stats API, cached in Blobs
 netlify/functions/bracket.mjs  GET/POST /api/bracket: bracket pool (field from standings, picks, series results)
+netlify/functions/playerstats.mjs  GET /api/playerstats?team=X&ids=..: 2026 season stats for a roster (MLB `/people?personIds=..&hydrate=stats(...)`, full season across teams), cached 6 h in Blobs `pstats-<TEAM>`
 netlify.toml, package.json     (@netlify/blobs is the only dependency)
 ```
 - **Blobs store `league`:** key `state` = `{picks:[...], orders:{WC:[..]}, updatedAt}`; key `stats` = `{lines, fetchedAt, sig}`; keys `box-<gamePk>` = cached boxscores of *final* games.
@@ -53,9 +54,9 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - Before the first real pick, Standings/Rosters show clearly labelled **example data** (`DEMO`).
 - Rendering is string templates → `#main.innerHTML`. `render()` **skips while a `<select>` in #main is focused** (phones close native pickers when the element is replaced) and catches up on focusout. Keep this.
 - Only text inputs get focus restored after render, never selects.
-- Draft room: team drop-down → player drop-down (hitters/pitchers optgroups, labelled SP/RP/SP/RP/H/SP, IL tag, taken/used players disabled) → H/SP/RP slot buttons (ineligible slots disabled) → Draft button. The slot he'll fill is highlighted but stays "Empty"; the name only appears on the team after Draft is clicked (owner's request).
+- Draft room: team drop-down → scrollable **player table with 2026 regular-season stats** (Hitters/Pitchers toggle; hitters R/HR/RBI/SB/OPS, pitchers W/K/ERA/WHIP/SV+H; tap a header to sort, default HR / K; OPS needs 50 AB and ERA/WHIP 20 IP to rank; IL tag; taken/used players greyed and not tappable; tap a row to select) → H/SP/RP slot buttons (ineligible slots disabled) → Draft button. The table keeps its scroll position across re-renders, and polling only re-renders when data actually changed. The slot he'll fill is highlighted but stays "Empty"; the name only appears on the team after Draft is clicked (owner's request).
 - The team drop-down lists only playoff teams, taken from the Bracket tab's field (`draftTeams()`): WC round = seeds 3–6 (seeds 1–2 have byes); DS/LCS/WS = every playoff team not yet knocked out. Falls back to all 30 teams if the bracket data can't load.
-- The phone layout (≤640px) fits the whole draft on one screen: compact clock card, three team columns side by side, **full player names wrapping to two lines**, pick strip and locked draft-order box hidden.
+- The phone layout (≤640px) keeps the draft compact (the player table makes it taller than one screen): compact clock card, three team columns side by side, **full player names wrapping to two lines**, pick strip and locked draft-order box hidden.
 - **No horizontal scrolling on phones, ever.** Tables are transposed or reflowed instead (the category table flips to rows = categories on phones). Inputs/selects are 16px on phones so iOS doesn't zoom.
 - Manual stat-line entry was intentionally removed (`editable=false`); stats are automatic only.
 

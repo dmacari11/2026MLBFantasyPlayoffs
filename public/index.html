@@ -290,7 +290,7 @@ button,input,select{font:inherit;color:inherit}
 .sq b{font-family:var(--body);font-size:10px;font-weight:700;color:var(--c)}
 .sq.done{opacity:.4}
 .sq.now{border:2px solid var(--c);background:var(--sunk);color:var(--ink)}
-.draft{grid-template-columns:minmax(0,300px) minmax(0,1fr)}
+.draft{grid-template-columns:minmax(0,390px) minmax(0,1fr)}
 @media (max-width:1000px){.dteams{grid-template-columns:1fr}}
 
 /* rules */
@@ -697,6 +697,44 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .bchamp b{font-size:13px}
   .bst td,.bst th{padding-left:6px;padding-right:6px}
 }
+
+/* ---------- draft room: player table with 2026 stats ---------- */
+.f-player>span{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pgrp{display:inline-flex;gap:4px;font-style:normal}
+.pg{border:0;border-radius:999px;padding:3px 11px;font:inherit;font-size:12px;font-weight:700;background:var(--sunk);color:var(--muted);cursor:pointer}
+.pg.on{background:var(--c);color:#fff}
+.ptbl{max-height:340px;overflow-y:auto;border:1.5px solid var(--rule);border-radius:12px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--surface)}
+.ptbl-empty{padding:12px;border:1.5px dashed var(--rule);border-radius:12px;color:var(--muted);font-size:14px}
+.pt{font-size:13px}
+.pt thead th{position:sticky;top:0;z-index:1;background:var(--head)}
+.pt th,.pt td{padding:7px 6px}
+.pt th.l{width:42%;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink)}
+.pt th.l small{font-weight:600;color:var(--muted)}
+.pt td.l{white-space:normal}
+.pt td:not(.l){font-family:var(--mono);font-size:13px}
+.pt td.on{font-weight:800}
+.pt .pn{display:block;font-weight:700;line-height:1.2}
+.pt td.l small{display:block;color:var(--muted);font-size:11px;line-height:1.3}
+.pt tbody tr[data-pp]{cursor:pointer}
+.pt tr.sel td{background:color-mix(in srgb,var(--c) 18%,var(--surface))!important}
+.pt tr.sel td.l{box-shadow:inset 4px 0 0 var(--c)}
+.pt tr.off td{opacity:.45}
+.psort{background:none;border:0;padding:0;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer}
+.psort.on{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.psel{font-size:13px;color:var(--muted);margin-top:6px}
+.psel b{color:var(--ink)}
+@media (max-width:640px){
+  #pickform .f-team,#pickform .f-player{grid-column:1/-1}
+  .ptbl{max-height:300px}
+  .pt{font-size:12px}
+  .pt th,.pt td{padding:6px 3px}
+  .pt th{font-size:9.5px}
+  .pt th.l{padding-left:8px;font-size:11px}
+  .pt td.l{padding-left:8px}
+  .pt td:not(.l){font-size:12px}
+  .pt .pn{font-size:13px}
+  .psel{margin-top:4px;font-size:12.5px}
+}
 </style>
 </head>
 <body>
@@ -752,10 +790,10 @@ const store=(k,v)=>{try{ if(v===undefined) return localStorage.getItem(k); local
 
 /* ---------- state ---------- */
 let db=null, canWrite=false, loaded={picks:false,lines:false};
-const S={picks:[],lines:[],league:{orders:{}},sync:null,rosters:{},br:null};
+const S={picks:[],lines:[],league:{orders:{}},sync:null,rosters:{},br:null,pstats:{}};
 const UI={pkTeam:'',pkPlayer:'',pkSlot:'',tab:store('os.tab')||'standings', standRound:'ALL', rosterRound:null, draftRound:null, open:new Set(), err:''};
 if(!['standings','rosters','draft','bracket'].includes(UI.tab)) UI.tab='standings';
-UI.bm=store('os.bm')||'Dan';
+UI.bm=store('os.bm')||'Dan'; UI.pkGrp='H'; UI.pkSort={};
 
 /* ---------- example league (shown only until the first real pick) ---------- */
 const DEMO=(()=>{
@@ -997,6 +1035,22 @@ function eligible(x){ // slots a roster player may fill
 function rosterPlayer(team,name){const r=S.rosters[team]; return r?r.find(x=>x.name===name):null;}
 // Teams you can draft from this round: the current playoff field (from the Bracket tab's live standings).
 // Wild Card round = seeds 3-6 (1 and 2 have byes); later rounds = every playoff team not yet knocked out.
+const f3=v=>v==null?'–':(v<1?v.toFixed(3).replace(/^0/,''):v.toFixed(3));
+const PCOLS_H=[
+  {k:'r',l:'R',fmt:s=>s.r,sortv:s=>s.r},{k:'hr',l:'HR',fmt:s=>s.hr,sortv:s=>s.hr,def:true},{k:'rbi',l:'RBI',fmt:s=>s.rbi,sortv:s=>s.rbi},
+  {k:'sb',l:'SB',fmt:s=>s.sb,sortv:s=>s.sb},{k:'ops',l:'OPS',fmt:s=>f3(s.ops),sortv:s=>s.ab>=50?s.ops:null}];
+const PCOLS_P=[
+  {k:'w',l:'W',fmt:s=>s.w,sortv:s=>s.w},{k:'k',l:'K',fmt:s=>s.k,sortv:s=>s.k,def:true},{k:'era',l:'ERA',fmt:s=>f2(s.era),sortv:s=>s.outs>=60?s.era:null,low:true},
+  {k:'whip',l:'WHIP',fmt:s=>f2(s.whip),sortv:s=>s.outs>=60?s.whip:null,low:true},{k:'svh',l:'SV+H',fmt:s=>s.svh,sortv:s=>s.svh}];
+const pstatsLoading=new Set();
+function loadPlayerStats(team){
+  if(S.pstats[team]||pstatsLoading.has(team)) return;
+  const ids=(S.rosters[team]||[]).map(x=>x.id).filter(Boolean); if(!ids.length) return;
+  pstatsLoading.add(team);
+  getJSON(`/api/playerstats?team=${encodeURIComponent(team)}&ids=${ids.join(',')}`)
+    .then(d=>{ S.pstats[team]={hit:d.hit||{},pit:d.pit||{}}; render(); })
+    .catch(()=>{}).finally(()=>pstatsLoading.delete(team));
+}
 function draftTeams(round){
   const f=S.br&&S.br.field; if(!f) return TEAMS;
   const out=bResults(S.br.series).out;
@@ -1012,18 +1066,26 @@ function pickerHtml(round,m,left){
   if(UI.pkTeam&&!dTeams.includes(UI.pkTeam)){ UI.pkTeam=''; UI.pkPlayer=''; }
   const teams=Object.keys(S.rosters).sort();
   const has=teams.length>0;
-  let playerSel=`<label class="field f-player"><span>Player</span><select id="pk-player" data-ui="1" disabled><option>Choose a team first</option></select></label>`;
+  let playerSel=`<div class="field f-player"><span>Player</span><div class="ptbl-empty">Choose a team to see its players</div></div>`;
   if(UI.pkTeam){
-    const r=S.rosters[UI.pkTeam]||[];
-    const opt=x=>{const k=norm(x.name); const tb=takenBy(k), ui=usedIn(k);
-      const why=tb?` — taken by ${tb}`:ui?` — you used him (${ui})`:'';
-      return `<option value="${esc(x.name)}" ${why?'disabled':''} ${UI.pkPlayer===x.name?'selected':''}>${esc(x.name)} · ${esc(posLabel(x))}${ilTag(x)}${why}</option>`;};
-    const hit=r.filter(x=>!isPitcherPos(x.pos)).sort((a,b)=>a.name.localeCompare(b.name));
-    const pit=r.filter(x=>isPitcherPos(x.pos)||x.pos==='TWP').sort((a,b)=>a.name.localeCompare(b.name));
-    playerSel=`<label class="field f-player"><span>Player</span><select id="pk-player" data-ui="1"><option value="">Choose a player</option>
-      ${hit.length?`<optgroup label="Hitters">${hit.map(opt).join('')}</optgroup>`:''}
-      ${pit.length?`<optgroup label="Pitchers">${pit.map(opt).join('')}</optgroup>`:''}
-</select></label>`;
+    const r=S.rosters[UI.pkTeam]||[]; const grp=UI.pkGrp==='P'?'P':'H';
+    const st=S.pstats[UI.pkTeam]; loadPlayerStats(UI.pkTeam);
+    const list=r.filter(x=>grp==='H'?!isPitcherPos(x.pos):(isPitcherPos(x.pos)||x.pos==='TWP'));
+    const cols=grp==='H'?PCOLS_H:PCOLS_P;
+    const sk=(UI.pkSort[grp]&&cols.find(c=>c.k===UI.pkSort[grp]))||cols.find(c=>c.def);
+    const statOf=x=>st?(grp==='H'?st.hit:st.pit)[x.id]:null;
+    const rows=list.map(x=>({x,s:statOf(x)})).sort((A,B)=>{
+      const va=A.s?sk.sortv(A.s):null, vb=B.s?sk.sortv(B.s):null;
+      if(va==null&&vb==null) return A.x.name.localeCompare(B.x.name);
+      if(va==null) return 1; if(vb==null) return -1;
+      return (sk.low?va-vb:vb-va)||A.x.name.localeCompare(B.x.name);
+    });
+    const body=rows.map(({x,s:sv})=>{const k=norm(x.name); const tb=takenBy(k), ui=usedIn(k);
+      const why=tb?`taken by ${tb}`:ui?`used in ${ui}`:''; const sel=UI.pkPlayer===x.name;
+      return `<tr class="${sel?'sel':''}${why?' off':''}" ${why?'':`data-pp="${esc(x.name)}"`}><td class="l"><span class="pn">${esc(x.name)}</span><small>${esc(posLabel(x))}${x.s==='IL'?' <span class="tag">IL</span>':''}${why?` · ${why}`:''}</small></td>${cols.map(c=>`<td class="${c.k===sk.k?'on':''}">${sv?c.fmt(sv):'–'}</td>`).join('')}</tr>`;}).join('');
+    playerSel=`<div class="field f-player"><span>Player <em class="pgrp">${['H','P'].map(g=>`<button type="button" class="pg${g===grp?' on':''}" data-pgrp="${g}">${g==='H'?'Hitters':'Pitchers'}</button>`).join('')}</em></span>
+      <div class="ptbl" id="ptbl" data-sk="${esc(UI.pkTeam+grp)}"><table class="yt pt"><thead><tr><th class="l">${esc(UI.pkTeam)} ${grp==='H'?'hitters':'pitchers'}${st?'':' <small>loading stats…</small>'}</th>${cols.map(c=>`<th><button type="button" class="psort${c.k===sk.k?' on':''}" data-psort="${c.k}">${c.l}</button></th>`).join('')}</tr></thead><tbody>${body||`<tr><td class="l" colspan="6">No players listed</td></tr>`}</tbody></table></div>
+      <div class="psel">${UI.pkPlayer?`Selected: <b>${esc(UI.pkPlayer)}</b>`:'Tap a player to select him'}</div></div>`;
   }
   return `<label class="field f-team"><span>Team</span><select id="pk-team" data-ui="1"><option value="">Team…</option>${dTeams.map(t=>`<option ${UI.pkTeam===t?'selected':''}>${t}</option>`).join('')}</select></label>
     ${playerSel}
@@ -1173,7 +1235,7 @@ async function saveBracket(m,picks){
   if(!r.ok){ const e=new Error(d.error||'That pick didn’t save.'); e.code='rejected'; throw e; }
   S.br=d; render();
 }
-async function loadBracket(){ try{ S.br=await getJSON('/api/bracket'); render(); }catch(e){} }
+async function loadBracket(){ try{ const d=await getJSON('/api/bracket'); const sig=JSON.stringify([d.field,d.picks,d.series,d.locked,d.lockAt]); if(S.br&&sig===lastBrSig) return; lastBrSig=sig; S.br=d; render(); }catch(e){} }
 function renderRules(){
   return `<div class="rules">
   <div class="panel"><h3>The format</h3>
@@ -1204,10 +1266,12 @@ function renderRules(){
 }
 function snapshotInputs(){
   const m={}; document.querySelectorAll('#main input, #main select').forEach(el=>{ if(!el.id) return; m[el.id]=el.type==='radio'?el.checked:el.value;});
-  return {m,focus:document.activeElement&&document.activeElement.id};
+  const pt=document.getElementById('ptbl');
+  return {m,focus:document.activeElement&&document.activeElement.id,pt:pt?{k:pt.dataset.sk,top:pt.scrollTop}:null};
 }
 function restoreInputs(s){
   Object.entries(s.m).forEach(([id,v])=>{const el=document.getElementById(id); if(!el||el.dataset.ui) return; if(el.type==='radio'){ if(!el.disabled) el.checked=v; } else if(!el.closest('.order')) el.value=v;});
+  const pt=document.getElementById('ptbl'); if(pt&&s.pt&&s.pt.k===pt.dataset.sk) pt.scrollTop=s.pt.top;
   // re-focus only text fields: re-focusing a <select> makes phones reopen its picker
   if(s.focus){const el=document.getElementById(s.focus); if(el&&el.tagName==='INPUT'&&el.type!=='radio') el.focus({preventScroll:true});}
 }
@@ -1238,7 +1302,11 @@ function writeFailed(e){
 async function touchSync(by){}
 
 document.addEventListener('click',async e=>{
+  const row=e.target.closest('tr[data-pp]');
+  if(row){ UI.pkPlayer=row.dataset.pp; UI.err=''; const r=UI.draftRound||draftRoundDefault(); autoSlot(r,pickSlotIndex(picksIn(S,r).length,orderFor(r)),UI.pkPlayer); render(); return; }
   const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.pgrp){ UI.pkGrp=t.dataset.pgrp; render(); return; }
+  if(t.dataset.psort){ UI.pkSort[UI.pkGrp==='P'?'P':'H']=t.dataset.psort; render(); return; }
   if(t.dataset.tab){ UI.tab=t.dataset.tab; store('os.tab',UI.tab); UI.err=''; render(); return; }
   if(t.dataset.bm){ UI.bm=t.dataset.bm; store('os.bm',UI.bm); render(); return; }
   if(t.dataset.bpick){
@@ -1264,7 +1332,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',async e=>{
   const el=e.target;
   if(el.tagName==='SELECT') el.blur();
-  if(el.id==='pk-team'){ UI.pkTeam=el.value; UI.pkPlayer=''; UI.err=''; render(); return; }
+  if(el.id==='pk-team'){ UI.pkTeam=el.value; UI.pkPlayer=''; UI.pkSlot=''; UI.err=''; render(); return; }
   if(el.id==='pk-player'){ UI.pkPlayer=el.value; UI.err=''; const r=UI.draftRound||draftRoundDefault(); const ps=picksIn(S,r); autoSlot(r,pickSlotIndex(ps.length,orderFor(r)),el.value); render(); return; }
   if(el.name==='pk-slot'){ UI.pkSlot=el.value; render(); return; }
   if(el.id==='pk-find'){ const m=el.value.match(/^(.*) — ([A-Z]+) · /); if(m&&S.rosters[m[2]]){ UI.pkTeam=m[2]; UI.pkPlayer=m[1]; const r=UI.draftRound||draftRoundDefault(); autoSlot(r,pickSlotIndex(picksIn(S,r).length,orderFor(r)),m[1]); el.value=''; UI.err=''; render(); const s=document.getElementById('pk-player'); if(s) s.focus(); } return; }
@@ -1340,13 +1408,17 @@ async function api(action,body,retried){
   if(!r.ok){ const e=new Error(data.error||'Something went wrong.'); e.code='rejected'; throw e; }
   applyLeague(data); return data;
 }
+let lastLeagueSig='', lastStatsSig='', lastBrSig='';
 function applyLeague(d){
   if(!d||!Array.isArray(d.picks)) return;
   S.picks=d.picks.filter(p=>RN[p.round]&&MANAGERS.includes(p.manager));
-  S.league={orders:d.orders||{}}; loaded.picks=true; render();
+  S.league={orders:d.orders||{}};
+  // only redraw when something changed, so scrolling the player table isn't interrupted by polling
+  const sig=JSON.stringify([d.picks,d.orders]); if(loaded.picks&&sig===lastLeagueSig) return; lastLeagueSig=sig;
+  loaded.picks=true; render();
 }
 async function loadLeague(){ try{ applyLeague(await getJSON('/api/league')); db=db||true; }catch(e){} }
-async function loadStats(){ try{ const d=await getJSON('/api/stats'); S.lines=d.lines||[]; S.sync=d.fetchedAt?{at:new Date(d.fetchedAt).toISOString(),by:'auto'}:null; loaded.lines=true; render(); }catch(e){} }
+async function loadStats(){ try{ const d=await getJSON('/api/stats'); S.sync=d.fetchedAt?{at:new Date(d.fetchedAt).toISOString(),by:'auto'}:null; const sig=JSON.stringify(d.lines||[]); if(loaded.lines&&sig===lastStatsSig&&UI.tab==='draft') return; lastStatsSig=sig; S.lines=d.lines||[]; loaded.lines=true; render(); }catch(e){} }
 render();
 (async()=>{
   loadBracket();
