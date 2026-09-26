@@ -53,7 +53,8 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - Before the first real pick, Standings/Rosters show clearly labelled **example data** (`DEMO`).
 - Rendering is string templates → `#main.innerHTML`. `render()` **skips while a `<select>` in #main is focused** (phones close native pickers when the element is replaced) and catches up on focusout. Keep this.
 - Only text inputs get focus restored after render, never selects.
-- Draft room: team drop-down → player drop-down (hitters/pitchers optgroups, labelled SP/RP/SP/RP/H/SP, IL tag, taken/used players disabled) → H/SP/RP slot buttons (ineligible slots disabled) → Draft button. The chosen player previews in the slot he'll fill.
+- Draft room: team drop-down → player drop-down (hitters/pitchers optgroups, labelled SP/RP/SP/RP/H/SP, IL tag, taken/used players disabled) → H/SP/RP slot buttons (ineligible slots disabled) → Draft button. The slot he'll fill is highlighted but stays "Empty"; the name only appears on the team after Draft is clicked (owner's request).
+- The team drop-down lists only playoff teams, taken from the Bracket tab's field (`draftTeams()`): WC round = seeds 3–6 (seeds 1–2 have byes); DS/LCS/WS = every playoff team not yet knocked out. Falls back to all 30 teams if the bracket data can't load.
 - The phone layout (≤640px) fits the whole draft on one screen: compact clock card, three team columns side by side, **full player names wrapping to two lines**, pick strip and locked draft-order box hidden.
 - **No horizontal scrolling on phones, ever.** Tables are transposed or reflowed instead (the category table flips to rows = categories on phones). Inputs/selects are 16px on phones so iOS doesn't zoom.
 - Manual stat-line entry was intentionally removed (`editable=false`); stats are automatic only.

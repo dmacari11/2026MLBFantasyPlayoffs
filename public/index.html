@@ -995,10 +995,21 @@ function eligible(x){ // slots a roster player may fill
   const r=x.role||'SP/RP'; return r==='SP'?['SP']:r==='RP'?['RP']:['SP','RP'];
 }
 function rosterPlayer(team,name){const r=S.rosters[team]; return r?r.find(x=>x.name===name):null;}
+// Teams you can draft from this round: the current playoff field (from the Bracket tab's live standings).
+// Wild Card round = seeds 3-6 (1 and 2 have byes); later rounds = every playoff team not yet knocked out.
+function draftTeams(round){
+  const f=S.br&&S.br.field; if(!f) return TEAMS;
+  const out=bResults(S.br.series).out;
+  const ok=['AL','NL'].flatMap(lg=>(f[lg]||[]).filter(t=>(round!=='WC'||t.seed>=3)&&!out.has(t.id)).map(t=>t.abbr));
+  const list=TEAMS.filter(t=>ok.includes(t));
+  return list.length?list:TEAMS;
+}
 function pickerHtml(round,m,left){
   const ps=picksIn(S,round);
   const takenBy=k=>{const t=ps.find(p=>p.key===k); return t?t.manager:null;};
   const usedIn=k=>{const u=S.picks.find(p=>p.manager===m&&p.key===k&&p.round!==round); return u?RN[u.round].short:null;};
+  const dTeams=draftTeams(round);
+  if(UI.pkTeam&&!dTeams.includes(UI.pkTeam)){ UI.pkTeam=''; UI.pkPlayer=''; }
   const teams=Object.keys(S.rosters).sort();
   const has=teams.length>0;
   let playerSel=`<label class="field f-player"><span>Player</span><select id="pk-player" data-ui="1" disabled><option>Choose a team first</option></select></label>`;
@@ -1014,7 +1025,7 @@ function pickerHtml(round,m,left){
       ${pit.length?`<optgroup label="Pitchers">${pit.map(opt).join('')}</optgroup>`:''}
 </select></label>`;
   }
-  return `<label class="field f-team"><span>Team</span><select id="pk-team" data-ui="1"><option value="">Team…</option>${TEAMS.map(t=>`<option ${UI.pkTeam===t?'selected':''}>${t}</option>`).join('')}</select></label>
+  return `<label class="field f-team"><span>Team</span><select id="pk-team" data-ui="1"><option value="">Team…</option>${dTeams.map(t=>`<option ${UI.pkTeam===t?'selected':''}>${t}</option>`).join('')}</select></label>
     ${playerSel}
     <div class="field f-slot"><span>Slot</span><div class="seg">${(()=>{const el=UI.pkPlayer?eligible(rosterPlayer(UI.pkTeam,UI.pkPlayer)):['H','SP','RP']; return Object.keys(SLOTS).map(s=>{const off=left[s]<=0||!el.includes(s); return `<label><input type="radio" name="pk-slot" id="pk-slot-${s}" data-ui="1" value="${s}" ${off?'disabled':''} ${UI.pkSlot===s&&!off?'checked':''}>${s}<small>${left[s]<=0?'full':!el.includes(s)?'not eligible':left[s]+' left'}</small></label>`;}).join('');})()}</div></div>`;
 }
@@ -1064,7 +1075,7 @@ function renderDraft(){
       for(let i=0;i<SLOTS[slot];i++){
         const p=list[i];
         if(p) h+=`<div class="dslot filled"><span class="slot">${slot}</span><span class="nm"><span class="fn">${esc(p.name)}</span><span class="ln2">${esc(lastName(p.name))}</span>${p.il?' <span class="tag">IL</span>':''}<small>${esc(p.team||'')}</small></span></div>`;
-        else if(clk&&slot===UI.pkSlot&&i===list.length) h+=`<div class="dslot empty next"><span class="slot">${slot}</span><span class="nm"><span class="fn">${UI.pkPlayer?esc(UI.pkPlayer):'Empty'}</span><span class="ln2">${UI.pkPlayer?esc(lastName(UI.pkPlayer)):'—'}</span><small>This pick</small></span></div>`;
+        else if(clk&&slot===UI.pkSlot&&i===list.length) h+=`<div class="dslot empty next"><span class="slot">${slot}</span><span class="nm"><span class="fn">Empty</span><span class="ln2">—</span><small>This pick</small></span></div>`;
         else h+=`<div class="dslot empty"><span class="slot">${slot}</span><span class="nm"><span class="fn">Empty</span><span class="ln2">—</span></span></div>`;
       }
       return h;
