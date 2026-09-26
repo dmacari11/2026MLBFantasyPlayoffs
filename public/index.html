@@ -591,7 +591,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
 .bnote{margin:10px 16px 12px;font-size:14px;color:var(--muted);line-height:1.45}
 .bnote b{color:var(--ink)}
 .bwarn{margin:0 16px 12px;padding:9px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn-ink);font-size:14px;font-weight:700}
-.bwho{padding-top:12px}
+.bwho{padding-top:12px;margin-bottom:12px}
 .bst .rec{font-family:var(--display);font-weight:700;font-size:19px}
 .brk{padding:4px 16px 18px}
 .bk{--g:22px;--row:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.2fr) repeat(3,minmax(0,1fr));column-gap:var(--g);grid-template-rows:auto auto calc(var(--row)*4 + 64px)}
@@ -1146,15 +1146,14 @@ function renderBracket(){
     ${col('AL','WC')}${col('AL','DS')}${col('AL','CS')}${wsCol}${col('NL','CS')}${col('NL','DS')}${col('NL','WC')}
   </div>`;
   const made=Object.keys(picks).length;
-  const status=locked?`<p class="bnote">Brackets locked at first pitch. Points land as each series ends.</p>`
-    :`<p class="bnote">Tap the team you think wins each series. Picks save instantly and can be changed until the first Wild Card pitch (<b>${esc(lockTxt)}</b>). Seeds follow the live standings until then.</p>`;
+  const status=`<span class="meta">${locked?'Locked':'Locks '+esc(lockTxt)}</span>`;
   const warn=!locked&&stale?`<p class="bwarn">The standings moved — ${stale} of ${m}’s picks no longer fit the bracket. Please pick those series again.</p>`:'';
   const all=`<table class="yt ball2"><thead><tr><th class="l">Series</th>${MANAGERS.map(x=>`<th><span class="tmc sm">${av(x)}<b class="cn">${x}</b></span></th>`).join('')}</tr></thead><tbody>${
     BSLOTS.map(s=>`<tr${s.k==='NL-WC2'||s.k==='WS'?' class="psep"':''}><td class="l">${s.round==='CS'||s.round==='WS'?s.lbl:`${s.lg} ${RN[s.round].short} ${s.lbl}`}</td>${MANAGERS.map(x=>{ const id=bPrune(br.picks[x]||{},br.field)[s.k]; if(id==null) return '<td class="nil">–</td>';
       const st=bStatus(res,s.round,id); const t=T[id]||{id,abbr:'?',name:''}; return `<td class="${st} blc" title="${esc(t.name||t.abbr)}">${logo(t).replace('class="blogo"','class="blogo rnd"')}</td>`; }).join('')}</tr>`).join('')
   }</tbody></table>`;
   return `<section class="ycard"><header class="yhead"><h2>Bracket pool</h2><span class="meta">1 · 2 · 4 · 8 pts by round</span></header>${board}</section>
-  <section class="ycard"><header class="yhead"><h2>${m}’s bracket <span class="sub">${made}/${BSLOTS.length} picked</span></h2></header>${who}${status}${warn}<div class="brk">${rounds}</div></section>
+  <section class="ycard"><header class="yhead"><h2>${m}’s bracket <span class="sub">${made}/${BSLOTS.length} picked</span></h2>${status}</header>${who}${warn}<div class="brk">${rounds}</div></section>
   <section class="ycard"><header class="yhead"><h2>Everyone’s picks</h2></header><div class="scroll">${all}</div></section>`;
 }
 async function saveBracket(m,picks){
