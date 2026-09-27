@@ -272,7 +272,13 @@ button,input,select{font:inherit;color:inherit}
 .bdhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
 
 
-.dteams{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+.dteams{grid-template-columns:1fr;margin-top:12px;gap:12px}
+.dcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.dcol{min-width:0}
+.dcol+.dcol{border-left:1.5px solid var(--rule)}
+.dteam .mstat{display:inline;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.dteam>header{align-items:center;gap:10px}
+.dteam>header h2{margin-right:auto}
 .dteam>header{padding:10px 12px}
 .dteam>header h2{font-size:24px}
 .dteam.onclk{box-shadow:0 0 0 2px var(--c)}
@@ -566,22 +572,20 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
   .dboard{padding:8px}
   .dboard .bdhead{margin-bottom:6px}
   .dboard .bdhead h3{font-size:15px}
-  .dteams{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px;margin-top:0}
+  .dteams{grid-template-columns:1fr!important;gap:8px;margin-top:0}
   .dteam{border-radius:12px}
   .dteam>header{padding:6px 7px;display:flex;align-items:center;justify-content:space-between;gap:4px}
   .dteam>header h2{font-size:15px}
   .dteam>header .meta,.dteam>header .clkpill{display:none}
   .dteam .mstat{display:inline;font-family:var(--mono);font-size:11px;color:var(--muted)}
   .dteam.onclk>header h2::after{content:" ●";color:var(--c);font-size:12px}
-  .dteam .grp-l{display:none}
+  .dteam .grp-l{font-size:9.5px;padding:4px 7px 3px;letter-spacing:.08em}
   .dteam .dslot{grid-template-columns:auto minmax(0,1fr);gap:5px;padding:5px 6px;min-height:30px;border-top:1px solid var(--soft-rule)}
-  .dteam .dslot:first-of-type{border-top:0}
   .dteam .slot{font-size:9px;min-width:20px;padding:2px 3px}
   .dteam .dslot .nm{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dteam .dslot .nm small{display:none}
   .dteam .dslot .nm .tag{font-size:8.5px;padding:0 3px}
   .dteam .dslot.empty .nm{font-style:normal}
-  .dteam>.grp-l:last-child{display:none!important}
   #pickform .seg label small{display:none}
   #pickform .seg label{padding:10px 2px}
   .bar{margin-bottom:8px}
@@ -1131,9 +1135,9 @@ function renderDraft(){
   const teamCol=m=>{
     const mine=ps.filter(p=>p.manager===m);
     const clk=m===onClock;
-    const grp=(slot,title)=>{
+    const grp=(slot)=>{
       const list=mine.filter(p=>p.slot===slot);
-      let h=`<div class="grp-l">${title}</div>`;
+      let h='';
       for(let i=0;i<SLOTS[slot];i++){
         const p=list[i];
         if(p) h+=`<div class="dslot filled"><span class="slot">${slot}</span><span class="nm"><span class="fn">${esc(p.name)}</span><span class="ln2">${esc(lastName(p.name))}</span>${p.il?' <span class="tag">IL</span>':''}<small>${esc(p.team||'')}</small></span></div>`;
@@ -1145,8 +1149,7 @@ function renderDraft(){
     const upcoming=[]; for(let i=n;i<PER_ROUND&&upcoming.length<2;i++){ if(pickSlotIndex(i,order)===m) upcoming.push(i+1); }
     const status=clk?'<span class="clkpill">On the clock</span>':(mine.length>=PER_TEAM?'<span class="meta">Done</span>':`<span class="meta">Next: #${upcoming[0]}</span>`);
     return `<section class="team dteam c-${m}${clk?' onclk':''}"><header><h2>${m}</h2>${status}<span class="mstat">${mine.length}/${PER_TEAM}</span></header>
-      ${grp('H','Hitters')}${grp('SP','Starting pitchers')}${grp('RP','Relief pitcher')}
-      <div class="grp-l" style="display:flex;justify-content:space-between"><span>${mine.length}/${PER_TEAM} drafted</span></div></section>`;
+      <div class="dcols"><div class="dcol"><div class="grp-l">Hitters</div>${grp('H')}</div><div class="dcol"><div class="grp-l">Pitchers</div>${grp('SP')}${grp('RP')}</div></div></section>`;
   };
   const seq=Array.from({length:PER_ROUND},(_,i)=>{const m=pickSlotIndex(i,order); const cls=i<n?'done':(i===n?'now':''); return `<span class="sq c-${m} ${cls}" title="Pick ${i+1}: ${m}">${i+1}<b>${m}</b></span>`;}).join('');
   const board=`<div class="panel dboard"><div class="bdhead"><h3 style="margin:0">${RN[round].name} rosters</h3>${canWrite&&n>0?`<button class="btn ghost sm" id="undo">Undo pick #${n}</button>`:''}</div>
