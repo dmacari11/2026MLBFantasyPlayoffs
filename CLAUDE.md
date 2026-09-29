@@ -39,6 +39,7 @@ public/og-image.png      1200×630 link-preview image (original art; do NOT use 
 netlify/functions/league.mjs   GET/POST /api/league: picks + draft order, stored in Netlify Blobs
 netlify/functions/stats.mjs    GET /api/stats: live box scores from MLB Stats API, cached in Blobs
 netlify/functions/bracket.mjs  GET/POST /api/bracket: bracket pool (field from standings, picks, series results)
+netlify/functions/scoreboard.mjs   GET /api/scoreboard: today's MLB games (ET date, rolls over at 4 a.m. ET) with live scores/inning from `schedule?date=..&hydrate=team,linescore`, cached 20 s in Blobs key `scoreboard`
 netlify/functions/playerstats.mjs  GET /api/playerstats?team=X&ids=..: 2026 season stats for a roster (MLB `/people?personIds=..&hydrate=stats(...)`, full season across teams), cached 6 h in Blobs `pstats-<TEAM>`
 netlify.toml, package.json     (@netlify/blobs is the only dependency)
 ```
@@ -50,6 +51,8 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - **Client polling:** league every 6 s on the Draft tab (45 s elsewhere), stats every 60 s. Polling pauses while the tab is hidden.
 
 ## Front end notes (public/index.html)
+- **Scoreboard strip** (`#scores`, outside `#main`) sits between the title and the tabs on every tab: today's games with team logos, live score + inning, start time or Final. Grid wraps (2 per row on phones, no sideways scroll); hidden when there are no games. Polled every 30 s.
+- On phones the title is one line and the Standings tab is tightened so title, scoreboard, standings and category totals fit on one screen (owner's request).
 - Tabs: **Standings, Rosters, Draft, Bracket** (a Rules tab was removed on purpose).
 - Before the first real pick, Standings/Rosters show clearly labelled **example data** (`DEMO`).
 - Rendering is string templates → `#main.innerHTML`. `render()` **skips while a `<select>` in #main is focused** (phones close native pickers when the element is replaced) and catches up on focusout. Keep this.

@@ -774,6 +774,54 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .rcols .glm li{font-size:11.5px}
   .rcols .glm .s{font-size:11px}
 }
+
+/* ---------- today's MLB scoreboard ---------- */
+.sb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0 0}
+.sbg{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--surface);border:1.5px solid var(--rule);border-radius:12px;padding:5px 10px;box-shadow:var(--lift-sm)}
+.sbg.live{border-color:color-mix(in srgb,var(--primary) 55%,var(--rule))}
+.sbt{grid-column:1;display:flex;align-items:center;gap:6px;min-width:0;line-height:1.35}
+.sbt img,.sbt i{width:18px;height:18px;flex:none;object-fit:contain}
+.sbt b{font-family:var(--display);font-weight:700;font-size:14px;flex:1;min-width:0}
+.sbt span{font-family:var(--mono);font-weight:700;font-size:15px}
+.sbt.lost{opacity:.55}
+.sbs{grid-column:2;grid-row:1 / 3;font-size:11.5px;font-weight:800;color:var(--muted);text-align:right;white-space:nowrap;border-left:1.5px solid var(--rule);padding-left:8px;align-self:stretch;display:flex;align-items:center;gap:4px}
+.sbg.live .sbs{color:var(--primary)}
+.sbs .dot{width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;animation:sbpulse 1.6s ease-in-out infinite}
+@keyframes sbpulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.sbs .dot{animation:none}}
+@media (max-width:640px){
+  .sb{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
+  .sbg{padding:3px 8px;border-radius:10px;column-gap:6px}
+  .sbt{gap:5px;line-height:1.2}
+  .sbt img,.sbt i{width:16px;height:16px}
+  .sbt b{font-size:13px}
+  .sbt span{font-size:14px}
+  .sbs{font-size:10.5px;padding-left:6px}
+}
+
+/* ---------- phones: title, scoreboard, standings and category totals on one screen ---------- */
+@media (max-width:640px){
+  .wrap{padding-top:8px}
+  .mast{padding-bottom:0;gap:0}
+  .brand .logo{gap:8px;align-items:center}
+  .ball{width:26px!important;height:26px!important}
+  .brand h1{font-size:clamp(18px,5.6vw,24px);line-height:1.1}
+  .tabs{margin:8px 0 10px}
+  .tabs button{padding:7px 2px;font-size:13.5px}
+  #main .ycard{margin-bottom:10px}
+  #main .yhead{padding:8px 12px 4px}
+  #main .yhead h2{font-size:18px}
+  #main .ytabs{padding:0 8px 6px}
+  #main .ytab{padding:4px 2px;font-size:12px}
+  .st th{padding:5px 6px}
+  .st td{padding:5px 6px}
+  .st .av{width:24px;height:24px;font-size:9.5px}
+  .st .tmc b{font-size:14px}
+  .st .rec{font-size:16px}
+  .cs tr.grp th{padding:3px 1px 1px}
+  .cs thead tr:last-child th{padding-top:5px;padding-bottom:5px}
+  .cs td{padding-top:5px;padding-bottom:5px}
+}
 </style>
 </head>
 <body>
@@ -785,6 +833,8 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
       <div class="logo"><svg class="ball" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="#fff" stroke="currentColor" stroke-width="4"/><path d="M14 13c7 6 9 13 9 19s-2 13-9 19M50 13c-7 6-9 13-9 19s2 13 9 19" fill="none" stroke="#E63946" stroke-width="3"/><path d="M17 20l5-2M20 27l5-1M20 35l5 1M17 43l5 2M47 20l-5-2M44 27l-5-1M44 35l-5 1M47 43l-5 2" stroke="#E63946" stroke-width="2.5" stroke-linecap="round"/></svg><h1>2026 Fantasy <span>MLB Playoffs</span></h1></div>
     </div>
   </header>
+
+  <section class="sb" id="scores" aria-label="Today's MLB games" hidden></section>
 
   <nav class="tabs" role="tablist">
     <button role="tab" id="tab-standings" data-tab="standings">Standings</button>
@@ -1210,6 +1260,31 @@ function renderDraft(){
   return `<div class="bar">${roundChips(round,'data-dr',false)}<span class="meta">3 hitters · 2 starters · 1 reliever each</span></div>
     <div class="draft"><div>${side}${orderHtml}</div>${board}</div>`;
 }
+/* ---------- today's MLB scoreboard (under the title) ---------- */
+let lastScoresSig='';
+function renderScores(d){
+  const el=document.getElementById('scores'); if(!el) return;
+  const gs=(d&&d.games)||[];
+  const sig=JSON.stringify(gs); if(sig===lastScoresSig) return; lastScoresSig=sig;
+  if(!gs.length){ el.hidden=true; el.innerHTML=''; return; }
+  const logo=t=>t.id?`<img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" alt="" onerror="this.style.visibility='hidden'">`:'<i></i>';
+  const status=g=>{
+    if(/postpon|cancel|suspend/i.test(g.detail)) return esc(g.detail.replace(/:.*$/,''));
+    if(g.state==='Final') return g.inning&&g.inning!==9?`Final/${g.inning}`:'Final';
+    if(g.state==='Live'){
+      if(!g.inning||/warmup|pre-game/i.test(g.detail)) return esc(g.detail||'Live');
+      const h=/^top/i.test(g.half)?'Top':/^bot/i.test(g.half)?'Bot':/^mid/i.test(g.half)?'Mid':/^end/i.test(g.half)?'End':'';
+      return `${h} ${g.inning}`;
+    }
+    if(g.tbd||!g.start) return 'TBD';
+    return new Date(g.start).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  };
+  const row=(t,o,g)=>{ const lead=g.state!=='Preview'&&t.score!=null&&o.score!=null&&t.score>o.score;
+    return `<div class="sbt${g.state==='Final'&&!lead?' lost':''}${lead?' lead':''}">${logo(t)}<b>${esc(t.abbr||'TBD')}</b><span>${t.score!=null&&g.state!=='Preview'?t.score:''}</span></div>`; };
+  el.innerHTML=gs.map(g=>`<div class="sbg ${g.state==='Live'?'live':g.state==='Final'?'final':'pre'}">${row(g.away,g.home,g)}${row(g.home,g.away,g)}<div class="sbs">${g.state==='Live'?'<i class="dot"></i>':''}${status(g)}</div></div>`).join('');
+  el.hidden=false;
+}
+async function loadScores(){ try{ renderScores(await getJSON('/api/scoreboard')); }catch(e){} }
 /* ---------- bracket pool ---------- */
 const BPTS={WC:1,DS:2,CS:4,WS:8};
 const BSLOTS=[];
@@ -1476,7 +1551,7 @@ async function loadLeague(){ try{ applyLeague(await getJSON('/api/league')); db=
 async function loadStats(){ try{ const d=await getJSON('/api/stats'); S.sync=d.fetchedAt?{at:new Date(d.fetchedAt).toISOString(),by:'auto'}:null; const sig=JSON.stringify(d.lines||[]); if(loaded.lines&&sig===lastStatsSig&&UI.tab==='draft') return; lastStatsSig=sig; S.lines=d.lines||[]; loaded.lines=true; render(); }catch(e){} }
 render();
 (async()=>{
-  loadBracket();
+  loadBracket(); loadScores(); setInterval(()=>{ if(!document.hidden) loadScores(); },30000);
   try{ const r=await getJSON('/rosters.json'); S.rosters=r; }catch(e){}
   try{ applyLeague(await getJSON('/api/league')); db=true; canWrite=true; }catch(e){ db=null; loaded.picks=true; render(); return; }
   loadStats();
@@ -1489,7 +1564,7 @@ render();
     if(now-lastS>=60000){ lastS=now; loadStats(); }
     if(now-lastB>=(UI.tab==='bracket'?30000:120000)){ lastB=now; loadBracket(); }
   },2000);
-  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadLeague(); loadStats(); loadBracket(); } });
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadLeague(); loadStats(); loadBracket(); loadScores(); } });
 })();
 })();
 </script>
