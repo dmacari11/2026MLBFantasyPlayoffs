@@ -39,7 +39,7 @@ public/og-image.png      1200×630 link-preview image (original art; do NOT use 
 netlify/functions/league.mjs   GET/POST /api/league: picks + draft order, stored in Netlify Blobs
 netlify/functions/stats.mjs    GET /api/stats: live box scores from MLB Stats API, cached in Blobs
 netlify/functions/bracket.mjs  GET/POST /api/bracket: bracket pool (field from standings, picks, series results)
-netlify/functions/scoreboard.mjs   GET /api/scoreboard: today's MLB games (ET date, rolls over at 4 a.m. ET) with live scores/inning from `schedule?date=..&hydrate=team,linescore`, cached 20 s in Blobs key `scoreboard`
+netlify/functions/scoreboard.mjs   GET /api/scoreboard: today's MLB games (ET date, rolls over at 4 a.m. ET; if that day has none, the next day with games within a week, labelled "Next games") with live scores/inning from `schedule?startDate=..&endDate=..&hydrate=team,linescore`, cached 20 s in Blobs key `scoreboard`
 netlify/functions/playerstats.mjs  GET /api/playerstats?team=X&ids=..: 2026 season stats for a roster (MLB `/people?personIds=..&hydrate=stats(...)`, full season across teams), cached 6 h in Blobs `pstats-<TEAM>`
 netlify.toml, package.json     (@netlify/blobs is the only dependency)
 ```

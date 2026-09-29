@@ -777,6 +777,7 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
 
 /* ---------- today's MLB scoreboard ---------- */
 .sb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0 0}
+.sbl{grid-column:1/-1;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:-2px}
 .sbg{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--surface);border:1.5px solid var(--rule);border-radius:12px;padding:5px 10px;box-shadow:var(--lift-sm)}
 .sbg.live{border-color:color-mix(in srgb,var(--primary) 55%,var(--rule))}
 .sbt{grid-column:1;display:flex;align-items:center;gap:6px;min-width:0;line-height:1.35}
@@ -1265,7 +1266,8 @@ let lastScoresSig='';
 function renderScores(d){
   const el=document.getElementById('scores'); if(!el) return;
   const gs=(d&&d.games)||[];
-  const sig=JSON.stringify(gs); if(sig===lastScoresSig) return; lastScoresSig=sig;
+  const later=d&&d.date&&d.today&&d.date!==d.today;
+  const sig=JSON.stringify([gs,later&&d.date]); if(sig===lastScoresSig) return; lastScoresSig=sig;
   if(!gs.length){ el.hidden=true; el.innerHTML=''; return; }
   const logo=t=>t.id?`<img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" alt="" onerror="this.style.visibility='hidden'">`:'<i></i>';
   const status=g=>{
@@ -1281,7 +1283,8 @@ function renderScores(d){
   };
   const row=(t,o,g)=>{ const lead=g.state!=='Preview'&&t.score!=null&&o.score!=null&&t.score>o.score;
     return `<div class="sbt${g.state==='Final'&&!lead?' lost':''}${lead?' lead':''}">${logo(t)}<b>${esc(t.abbr||'TBD')}</b><span>${t.score!=null&&g.state!=='Preview'?t.score:''}</span></div>`; };
-  el.innerHTML=gs.map(g=>`<div class="sbg ${g.state==='Live'?'live':g.state==='Final'?'final':'pre'}">${row(g.away,g.home,g)}${row(g.home,g.away,g)}<div class="sbs">${g.state==='Live'?'<i class="dot"></i>':''}${status(g)}</div></div>`).join('');
+  const lbl=later?`<div class="sbl">Next games · ${new Date(d.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>`:'';
+  el.innerHTML=lbl+gs.map(g=>`<div class="sbg ${g.state==='Live'?'live':g.state==='Final'?'final':'pre'}">${row(g.away,g.home,g)}${row(g.home,g.away,g)}<div class="sbs">${g.state==='Live'?'<i class="dot"></i>':''}${status(g)}</div></div>`).join('');
   el.hidden=false;
 }
 async function loadScores(){ try{ renderScores(await getJSON('/api/scoreboard')); }catch(e){} }
