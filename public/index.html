@@ -205,13 +205,18 @@ button,input,select{font:inherit;color:inherit}
 .team>header .meta{font-family:var(--mono)}
 .grp-l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:8px 14px 4px;border-top:1px solid var(--rule);background:var(--sunk)}
 .plr{border-top:1px solid var(--rule)}
-.plr>button{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 14px;cursor:pointer}
+.plr>button{display:grid;grid-template-columns:auto auto 1fr auto;gap:4px 10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 14px;cursor:pointer}
 .plr>button:hover{background:var(--sunk)}
 .slot{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 5px;border-radius:3px;background:var(--sunk);color:var(--muted);min-width:28px;text-align:center}
 .plr .nm{font-weight:600;overflow-wrap:anywhere}
 .plr .nm small{font-weight:400;color:var(--muted);margin-left:4px}
-.plr .ln{grid-column:2 / 4;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.plr .ln{grid-column:3 / 5;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
 .plr .gp{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.face{grid-row:1 / 3;width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--sunk);box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--c);display:grid;place-items:center;flex:none;align-self:center}
+.face img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.face em{display:none;font-style:normal;font-family:var(--display);font-weight:700;font-size:13px;color:var(--muted)}
+.face.noimg img{display:none}
+.face.noimg em{display:block}
 .plr.empty{padding:10px 14px;color:var(--muted);font-size:14px}
 .detail{padding:4px 14px 14px;background:var(--sunk)}
 .gl{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0 10px}
@@ -750,11 +755,13 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .rcol{min-width:0}
   .rcol+.rcol{border-left:1.5px solid var(--rule)}
   .team .grp-l{font-size:9.5px;letter-spacing:.08em;padding:4px 8px 3px}
-  .rcols .plr>button{grid-template-columns:minmax(0,1fr) auto;gap:1px 4px;padding:5px 8px;align-items:baseline}
+  .rcols .plr>button{grid-template-columns:auto minmax(0,1fr) auto;gap:2px 6px;padding:5px 7px;align-items:center}
+  .rcols .plr .face{grid-column:1;grid-row:1;width:30px;height:30px;box-shadow:0 0 0 1.5px var(--surface),0 0 0 2.5px var(--c)}
+  .rcols .plr .face em{font-size:10.5px}
   .rcols .plr .slot{display:none}
-  .rcols .plr .nm{grid-column:1;grid-row:1;font-size:13px;line-height:1.2;font-weight:700}
+  .rcols .plr .nm{grid-column:2;grid-row:1;font-size:13px;line-height:1.2;font-weight:700}
   .rcols .plr .nm small{display:block;margin:0;font-size:10.5px;font-weight:600}
-  .rcols .plr .gp{grid-column:2;grid-row:1;font-size:10px}
+  .rcols .plr .gp{grid-column:3;grid-row:1;align-self:start;font-size:10px}
   .rcols .plr .ln{grid-column:1/-1;grid-row:2;font-family:var(--body);font-size:11px;line-height:1.3;color:var(--muted)}
   .rcols .plr.empty{padding:6px 8px;font-size:12px;font-style:italic}
   .rcols .grp-l+.plr{border-top:0}
@@ -918,6 +925,12 @@ function hitLine(a){
   bits.push(`${fOPS(ops(a))} OPS`); return bits.join(', ');
 }
 // short versions for the two-column phone layout
+// MLB headshot in a circle; falls back to the player's initials if there's no photo
+function face(p){
+  const rp=p.mlbId?null:rosterPlayer(p.team,p.name); const id=p.mlbId||(rp&&rp.id);
+  const ini=esc(String(p.name).split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ]/.test(w)).slice(0,2).map(w=>w[0]).join(''));
+  return `<span class="face${id?'':' noimg'}">${id?`<img src="https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_96,q_auto:best/v1/people/${id}/headshot/67/current" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">`:''}<em>${ini}</em></span>`;
+}
 function hitLineC(a){
   if(!a.games) return 'No games yet';
   const bits=[`${a.h}-${a.ab}`]; if(a.hr) bits.push(`${a.hr} HR`); if(a.r) bits.push(`${a.r} R`); if(a.rbi) bits.push(`${a.rbi} RBI`); if(a.sb) bits.push(`${a.sb} SB`);
@@ -1029,7 +1042,7 @@ function renderRosters(){
         const p=list[i];
         if(!p){ html+=`<div class="plr empty"><span class="lg">Open ${SLOT_NAME[slot].toLowerCase()} slot</span><span class="sh">Open ${slot} slot</span></div>`; continue; }
         const a=playerAgg(src,round,p.key,p.slot); const ok=`${round}|${p.key}`; const open=UI.open.has(ok);
-        html+=`<div class="plr"><button data-open="${esc(ok)}" aria-expanded="${open}"><span class="slot">${p.slot}</span><span class="nm">${esc(p.name)}<small><span class="sh">${p.slot!=='H'?p.slot+' · ':''}</span>${esc(p.team||'')}</small></span><span class="gp">${a.games} G</span><span class="ln"><span class="lg">${p.slot==='H'?hitLine(a):pitLine(a)}</span><span class="sh">${p.slot==='H'?hitLineC(a):pitLineC(a)}</span></span></button>${open?detail(src,p,editable):''}</div>`;
+        html+=`<div class="plr"><button data-open="${esc(ok)}" aria-expanded="${open}"><span class="slot">${p.slot}</span>${face(p)}<span class="nm">${esc(p.name)}<small><span class="sh">${p.slot!=='H'?p.slot+' · ':''}</span>${esc(p.team||'')}</small></span><span class="gp">${a.games} G</span><span class="ln"><span class="lg">${p.slot==='H'?hitLine(a):pitLine(a)}</span><span class="sh">${p.slot==='H'?hitLineC(a):pitLineC(a)}</span></span></button>${open?detail(src,p,editable):''}</div>`;
       }
       return html;
     };
