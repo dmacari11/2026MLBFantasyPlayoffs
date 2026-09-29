@@ -603,12 +603,14 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
 .bwho{padding-top:12px;margin-bottom:12px}
 .bst .rec{font-family:var(--display);font-weight:700;font-size:19px}
 .brk{padding:4px 16px 18px}
-.bk{--g:22px;--row:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.2fr) repeat(3,minmax(0,1fr));column-gap:var(--g);grid-template-rows:auto auto calc(var(--row)*4 + 64px)}
+.bk{--g:22px;--row:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.2fr) repeat(3,minmax(0,1fr));column-gap:var(--g);grid-template-rows:auto auto calc(var(--row)*4 + 84px)}
 .bklg{grid-column:span 3;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:3px solid var(--primary);padding-bottom:4px;margin-bottom:6px}
 .bkh{text-align:center;font-family:var(--display);font-weight:700;font-size:14px;line-height:1.15;padding-bottom:8px}
 .bkh small{display:block;font-family:var(--body);font-size:11px;font-weight:700;color:var(--muted)}
 .bkc{display:flex;flex-direction:column;justify-content:space-around;position:relative;min-width:0}
 .bm{position:relative;border:1.5px solid var(--rule);border-radius:10px;background:var(--surface)}
+.bser{position:absolute;left:0;right:0;top:100%;margin-top:3px;text-align:center;font-size:11.5px;font-weight:800;color:var(--muted);white-space:nowrap;line-height:1.2}
+.bkc.ws .bser{margin-top:4px}
 .bm>.bt:first-child{border-radius:9px 9px 0 0}
 .bm>.bt:last-child{border-radius:0 0 9px 9px}
 /* connector lines: AL flows right toward the World Series, NL flows left */
@@ -626,7 +628,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:0}
 .bkc.ws .bm{border-width:2px;border-color:var(--primary)}
 .bwsl{position:absolute;left:0;right:0;bottom:calc(50% + var(--row) + 8px);text-align:center;font-family:var(--display);font-weight:700;font-size:16px;line-height:1.1}
 .bwsl small{display:block;font-family:var(--body);font-size:11px;color:var(--muted)}
-.bchamp{position:absolute;left:0;right:0;top:calc(50% + var(--row) + 10px);display:flex;align-items:center;justify-content:center;gap:8px}
+.bchamp{position:absolute;left:0;right:0;top:calc(50% + var(--row) + 26px);display:flex;align-items:center;justify-content:center;gap:8px}
 .bchamp small{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .bchamp b{font-family:var(--display);font-size:16px}
 .bchamp .blogo{width:34px;height:34px}
@@ -683,7 +685,7 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .bnote{margin:8px 12px 10px;font-size:13.5px}
   .bwarn{margin:0 12px 10px}
   .brk{padding:2px 8px 12px}
-  .bk{--g:7px;--row:36px;grid-template-rows:auto auto calc(var(--row)*4 + 96px)}
+  .bk{--g:7px;--row:36px;grid-template-rows:auto auto calc(var(--row)*4 + 110px)}
   .bklg{font-size:9.5px;letter-spacing:.04em}
   .bkh{font-size:11.5px;padding-bottom:6px}
   .bkh small{font-size:9.5px}
@@ -700,7 +702,8 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .bt.sel.loss{box-shadow:inset 0 0 0 2px var(--bad)}
   .bwsl{font-size:12px;bottom:calc(50% + var(--row) + 6px)}
   .bwsl small{font-size:9.5px}
-  .bchamp{flex-direction:column;gap:3px;top:calc(50% + var(--row) + 8px);text-align:center}
+  .bchamp{flex-direction:column;gap:3px;top:calc(50% + var(--row) + 20px);text-align:center}
+  .bser{font-size:9px;margin-top:2px;letter-spacing:-.01em}
   .bchamp .blogo{width:30px;height:30px}
   .bchamp small{font-size:8.5px;letter-spacing:.04em}
   .bchamp b{font-size:13px}
@@ -1341,13 +1344,22 @@ function renderBracket(){
   const teamBtn=(s,id)=>{
     if(id==null) return `<div class="bt tbd"><span class="blogo"></span><span class="bnm">TBD</span></div>`;
     const t=T[id]||{id,abbr:'?',name:'',seed:''}; const sel=picks[s.k]===id; const st=sel?bStatus(res,s.round,id):'';
-    const ser=bSeries(br,s.round,...bTeamsIn(s,br.field,picks)); const wins=ser?`<span class="bw">${ser.wins[id]||0}</span>`:'';
+    const wins='';
     const mark=st==='win'?`<span class="bpt">+${BPTS[s.round]}</span>`:(st==='loss'?'<span class="bx">✗</span>':(sel?'<span class="bck">✓</span>':''));
     const inner=`<span class="bs">${t.seed}</span>${logo(t)}<span class="bnm"><b>${esc(t.abbr)}</b>${!locked&&t.clinched?'<i title="Clinched a playoff spot">✓</i>':''}</span>${wins}${mark}`;
     const cls=`bt${sel?' sel c-'+m:''}${st?' '+st:''}`; const tip=`${t.seed?'('+t.seed+') ':''}${t.name||t.abbr}`;
     return locked?`<div class="${cls}" title="${esc(tip)}">${inner}</div>`:`<button class="${cls}" title="Pick the ${esc(tip)}" data-bpick="${s.k}|${id}">${inner}</button>`;
   };
-  const card=s=>{ const pair=bTeamsIn(s,br.field,picks); return `<div class="bm">${teamBtn(s,pair[0])}${teamBtn(s,pair[1])}</div>`; };
+  // the real bracket (actual series winners), so each matchup can show its real series score
+  const real={}; BORDER.forEach(x=>{ const pr=bTeamsIn(x,br.field,real); const sr=pr[0]!=null&&pr[1]!=null&&bSeries(br,x.round,pr[0],pr[1]); if(sr&&sr.winner) real[x.k]=sr.winner; });
+  const serTxt=x=>{ const pr=bTeamsIn(x,br.field,real); if(pr[0]==null||pr[1]==null) return '';
+    const sr=bSeries(br,x.round,pr[0],pr[1]); if(!sr) return '';
+    const [a,b]=pr; const wa=sr.wins[a]||0, wb=sr.wins[b]||0; if(!wa&&!wb) return '';
+    const ab=id=>esc((T[id]||{}).abbr||'?'); const hi=Math.max(wa,wb), lo=Math.min(wa,wb); const top=wa>=wb?a:b;
+    if(sr.winner) return `<span class="lg">${ab(sr.winner)} wins ${hi}-${lo}</span><span class="sh">${ab(sr.winner)} ${hi}-${lo}</span>`;
+    if(wa===wb) return `<span class="lg">Tied ${wa}-${wb}</span><span class="sh">${wa}-${wb}</span>`;
+    return `<span class="lg">${ab(top)} leads ${hi}-${lo}</span><span class="sh">${ab(top)} ${hi}-${lo}</span>`; };
+  const card=s=>{ const pair=bTeamsIn(s,br.field,picks); const st=serTxt(s); return `<div class="bm">${teamBtn(s,pair[0])}${teamBtn(s,pair[1])}${st?`<div class="bser">${st}</div>`:''}</div>`; };
   const col=(lg,r)=>`<div class="bkc ${lg?lg.toLowerCase():'ws'} r-${r}">${BSLOTS.filter(s=>s.round===r&&s.lg===lg).map(card).join('')}</div>`;
   const champ=picks.WS!=null&&T[picks.WS]?T[picks.WS]:null;
   const wsCol=`<div class="bkc ws r-WS"><div class="bwsl">World Series<small>${BPTS.WS} pts</small></div>${card(BSLOT.WS)}<div class="bchamp">${champ?`${logo(champ)}<span><small>Champion</small><b>${esc(champ.abbr)}</b></span>`:'<span><small>Champion</small><b>—</b></span>'}</div></div>`;
