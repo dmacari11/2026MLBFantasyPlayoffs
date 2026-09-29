@@ -66,7 +66,7 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - Manual stat-line entry was intentionally removed (`editable=false`); stats are automatic only.
 
 ## Design system (friendly middle ground: fun, not cartoonish)
-- Fonts (Google Fonts): **Fredoka** (headings/UI), **Nunito Sans** (body), **DM Mono** (numbers).
+- Fonts (Google Fonts): **Fredoka** (headings/UI), **Nunito Sans** (body), **Nunito Sans with tabular digits** for numbers (DM Mono was dropped: owner disliked its slashed zeros).
 - Tokens live in `:root` with light and dark variants; the last theme block in the CSS is "FRIENDLY THEME" and overrides earlier ones.
 - Manager colours: Dan `--dan` blue #3B76F6, Dio `--dio` orange #F28A2E, CK `--ck` teal #14A895. Avatar initials: **Dan = DM, Dio = CD, CK = CK**.
 - Primary/accent coral #F25C4B; title reads "2026 Fantasy **MLB Playoffs**" (second half in coral) next to a small tilted baseball SVG. No tagline under the title, no round-status tiles.

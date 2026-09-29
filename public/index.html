@@ -29,7 +29,7 @@
 <title>2026 Fantasy MLB Playoffs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
 <style>
 :root{
   --ground:#EDF0F3; --surface:#FFFFFF; --sunk:#E3E7EC; --ink:#121A2B; --muted:#5A6477; --rule:#D3D9E1;
@@ -444,7 +444,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   --warn-bg:#FFF3C4; --warn-ink:#4A3A00;
   --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
   --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
-  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --mono:"Nunito Sans","Segoe UI",system-ui,sans-serif;
   --lift:0 1px 0 rgba(30,35,64,.06),0 8px 24px -12px rgba(30,35,64,.25);
   --lift-sm:0 1px 0 rgba(30,35,64,.06),0 4px 10px -6px rgba(30,35,64,.25);
 }
@@ -826,6 +826,9 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .cs thead tr:last-child th{padding-top:5px;padding-bottom:5px}
   .cs td{padding-top:5px;padding-bottom:5px}
 }
+
+/* numbers: plain (unslashed) zeros, equal-width digits so columns still line up */
+body{font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
