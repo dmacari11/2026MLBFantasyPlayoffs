@@ -51,7 +51,7 @@ netlify.toml, package.json     (@netlify/blobs is the only dependency)
 - **Client polling:** league every 6 s on the Draft tab (45 s elsewhere), stats every 60 s. Polling pauses while the tab is hidden.
 
 ## Front end notes (public/index.html)
-- **Scoreboard strip** (`#scores`, outside `#main`) sits between the title and the tabs on every tab: today's games with team logos, live score + inning, start time or Final. Grid wraps (2 per row on phones, no sideways scroll); hidden when there are no games. Polled every 30 s.
+- **Scoreboard strip** (`#scores`, outside `#main`) sits between the title and the tabs on every tab: today's games with team logos, live score + inning, start time or Final. Grid wraps (4 per row on phones, status line on top of each card; no sideways scroll); hidden when there are no games. Polled every 30 s.
 - On phones the title is one line and the Standings tab is tightened so title, scoreboard, standings and category totals fit on one screen (owner's request).
 - Tabs: **Standings, Rosters, Draft, Bracket** (a Rules tab was removed on purpose).
 - Before the first real pick, Standings/Rosters show clearly labelled **example data** (`DEMO`).

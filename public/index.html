@@ -791,13 +791,16 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
 @keyframes sbpulse{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.sbs .dot{animation:none}}
 @media (max-width:640px){
-  .sb{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
-  .sbg{padding:3px 8px;border-radius:10px;column-gap:6px}
-  .sbt{gap:5px;line-height:1.2}
-  .sbt img,.sbt i{width:19px;height:19px}
-  .sbt b{font-size:13px}
-  .sbt span{font-size:14px}
-  .sbs{font-size:10.5px;padding-left:6px}
+  /* four games across: status on top, the two teams underneath */
+  .sb{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:8px}
+  .sbg{grid-template-columns:minmax(0,1fr);padding:3px 6px 4px;border-radius:10px}
+  .sbg>.sbt:nth-child(1){grid-row:2} .sbg>.sbt:nth-child(2){grid-row:3}
+  .sbt{gap:4px;line-height:1.25}
+  .sbt img,.sbt i{width:17px;height:17px;padding:1.5px}
+  .sbt b{font-size:12px}
+  .sbt span{font-size:12.5px}
+  .sbs{grid-column:1;grid-row:1;font-size:9.5px;padding:0 0 2px;margin-bottom:2px;border-left:0;border-bottom:1.5px solid var(--rule);justify-content:center;gap:3px}
+  .sbs .dot{width:5px;height:5px}
 }
 
 /* ---------- phones: title, scoreboard, standings and category totals on one screen ---------- */
