@@ -739,6 +739,30 @@ button.bt:hover{background:var(--row-hover,var(--sunk))}
   .pt .pn{font-size:13px}
   .psel{margin-top:4px;font-size:12.5px}
 }
+
+/* ---------- rosters tab on phones: two tight columns per manager ---------- */
+@media (max-width:640px){
+  .teams{gap:10px}
+  .team>header{padding:7px 10px}
+  .team>header h2{font-size:20px}
+  .team>header .meta{font-size:11.5px}
+  .rcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rcol{min-width:0}
+  .rcol+.rcol{border-left:1.5px solid var(--rule)}
+  .team .grp-l{font-size:9.5px;letter-spacing:.08em;padding:4px 8px 3px}
+  .rcols .plr>button{grid-template-columns:minmax(0,1fr) auto;gap:1px 4px;padding:5px 8px;align-items:baseline}
+  .rcols .plr .slot{display:none}
+  .rcols .plr .nm{grid-column:1;grid-row:1;font-size:13px;line-height:1.2;font-weight:700}
+  .rcols .plr .nm small{display:block;margin:0;font-size:10.5px;font-weight:600}
+  .rcols .plr .gp{grid-column:2;grid-row:1;font-size:10px}
+  .rcols .plr .ln{grid-column:1/-1;grid-row:2;font-family:var(--body);font-size:11px;line-height:1.3;color:var(--muted)}
+  .rcols .plr.empty{padding:6px 8px;font-size:12px;font-style:italic}
+  .rcols .grp-l+.plr{border-top:0}
+  .team .rtot{font-size:10px;padding:5px 8px;border-top:1.5px solid var(--rule)}
+  .rcols .detail{padding:4px 8px 8px}
+  .rcols .glm li{font-size:11.5px}
+  .rcols .glm .s{font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -893,6 +917,17 @@ function hitLine(a){
   if(a.hr) bits.push(`${a.hr} HR`); if(a.r) bits.push(`${a.r} R`); if(a.rbi) bits.push(`${a.rbi} RBI`); if(a.sb) bits.push(`${a.sb} SB`);
   bits.push(`${fOPS(ops(a))} OPS`); return bits.join(', ');
 }
+// short versions for the two-column phone layout
+function hitLineC(a){
+  if(!a.games) return 'No games yet';
+  const bits=[`${a.h}-${a.ab}`]; if(a.hr) bits.push(`${a.hr} HR`); if(a.r) bits.push(`${a.r} R`); if(a.rbi) bits.push(`${a.rbi} RBI`); if(a.sb) bits.push(`${a.sb} SB`);
+  bits.push(`${fOPS(ops(a))} OPS`); return bits.join(' · ');
+}
+function pitLineC(a){
+  if(!a.games) return 'No games yet';
+  const bits=[`${ipStr(a.outs)} IP`,`${a.k} K`,`${f2(era(a))} ERA`,`${f2(whip(a))} WHIP`];
+  if(a.w) bits.push(`${a.w} W`); if(a.sv+a.hld) bits.push(`${a.sv+a.hld} SV+H`); return bits.join(' · ');
+}
 function pitLine(a){
   if(!a.games) return 'No games yet';
   const bits=[`${ipStr(a.outs)} IP`,`${a.k} K`,`${f2(era(a))} ERA`,`${f2(whip(a))} WHIP`];
@@ -989,19 +1024,19 @@ function renderRosters(){
     const ps=picksIn(src,round).filter(p=>p.manager===m);
     const grp=(slot,title)=>{
       const list=ps.filter(p=>p.slot===slot);
-      let html=`<div class="grp-l">${title}</div>`;
+      let html=title?`<div class="grp-l">${title}</div>`:'';
       for(let i=0;i<SLOTS[slot];i++){
         const p=list[i];
-        if(!p){ html+=`<div class="plr empty">Open ${SLOT_NAME[slot].toLowerCase()} slot</div>`; continue; }
+        if(!p){ html+=`<div class="plr empty"><span class="lg">Open ${SLOT_NAME[slot].toLowerCase()} slot</span><span class="sh">Open ${slot} slot</span></div>`; continue; }
         const a=playerAgg(src,round,p.key,p.slot); const ok=`${round}|${p.key}`; const open=UI.open.has(ok);
-        html+=`<div class="plr"><button data-open="${esc(ok)}" aria-expanded="${open}"><span class="slot">${p.slot}</span><span class="nm">${esc(p.name)}<small>${esc(p.team||'')}</small></span><span class="gp">${a.games} G</span><span class="ln">${p.slot==='H'?hitLine(a):pitLine(a)}</span></button>${open?detail(src,p,editable):''}</div>`;
+        html+=`<div class="plr"><button data-open="${esc(ok)}" aria-expanded="${open}"><span class="slot">${p.slot}</span><span class="nm">${esc(p.name)}<small><span class="sh">${p.slot!=='H'?p.slot+' · ':''}</span>${esc(p.team||'')}</small></span><span class="gp">${a.games} G</span><span class="ln"><span class="lg">${p.slot==='H'?hitLine(a):pitLine(a)}</span><span class="sh">${p.slot==='H'?hitLineC(a):pitLineC(a)}</span></span></button>${open?detail(src,p,editable):''}</div>`;
       }
       return html;
     };
     const T=teamAgg(src,round)[m];
     return `<section class="team c-${m}"><header><h2>${m}</h2><span class="meta">${ps.length}/${PER_TEAM} drafted</span></header>
-      ${grp('H','Hitters')}${grp('SP','Starting pitchers')}${grp('RP','Relief pitcher')}
-      <div class="grp-l" style="display:flex;justify-content:space-between"><span>${RN[round].short} total</span><span class="num">${T.h.r} R · ${T.h.hr} HR · ${T.p.k} K</span></div></section>`;
+      <div class="rcols"><div class="rcol">${grp('H','Hitters')}</div><div class="rcol">${grp('SP','Pitchers')}${grp('RP','')}</div></div>
+      <div class="grp-l rtot" style="display:flex;justify-content:space-between"><span>${RN[round].short} total</span><span class="num">${T.h.r} R · ${T.h.hr} HR · ${T.p.k} K</span></div></section>`;
   }).join('');
   return `${demoBanner()}
   <div class="bar">${roundChips(round,'data-rr',false)}<span class="meta">${syncLine()}</span></div>
