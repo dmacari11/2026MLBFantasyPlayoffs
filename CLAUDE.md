@@ -17,7 +17,7 @@ The owner (Dan) is not a developer. Explain changes in plain language, keep his 
 - 10 categories. Batting: R, HR, RBI, SB, OPS. Pitching: W, K, ERA, WHIP, SV+H (saves + holds).
 - Hitting stats come only from H picks; pitching stats only from SP/RP picks.
 - OPS, ERA and WHIP are computed from summed components (OBP = (H+BB+HBP)/(AB+BB+HBP+SF); SLG = TB/AB; ERA = ER×27/outs; WHIP = (BB+H)×3/outs), never averaged.
-- **Head-to-head-to-head per category:** the outright leader gets a **W**, the other two get an **L**. If two or three tie for the lead, each tied leader gets a **T** and anyone else gets an **L**. Lower wins for ERA and WHIP. A category nobody has stats in yet is undecided (no result).
+- **Head-to-head-to-head per category:** the outright leader gets a **W**, the other two get an **L**. If two or three tie for the lead, each tied leader gets a **T** and anyone else gets an **L**. Lower wins for ERA and WHIP. A category is undecided (no result) until games have been played: batting categories once any drafted hitter has a plate appearance in that round (or overall), pitching ones once any drafted pitcher has pitched. **After that, a counting category where everyone is at 0 (e.g. all SV+H = 0) is a 3-way tie** (owner's rule). OPS/ERA/WHIP stay undecided while nobody has a value.
 - Standings = W-L-T record, sorted by wins, then ties. Pct (shown like Yahoo) = (W + T/2) / decided categories. GB uses Yahoo's formula.
 - Standings are shown overall (all rounds combined) and per round, plus a round-by-round records table.
 

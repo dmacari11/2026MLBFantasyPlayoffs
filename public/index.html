@@ -964,12 +964,16 @@ const CATS=[
   {k:'W',v:t=>t.p.w,sep:true},{k:'K',v:t=>t.p.k},{k:'ERA',v:t=>era(t.p),fmt:f2,low:true},{k:'WHIP',v:t=>whip(t.p),fmt:f2,low:true},{k:'SV+H',v:t=>t.p.sv+t.p.hld}];
 function scoreboard(src,round){
   const T=teamAgg(src,round); const rows=MANAGERS.map(m=>({m,vals:{},w:0,l:0,t:0,res:{}}));
-  CATS.forEach(c=>{
+  // has any drafted hitter batted / any drafted pitcher pitched yet (in this round, or overall)?
+  const hitPlayed=MANAGERS.some(m=>{const h=T[m].h; return h.ab+h.bb+h.hbp+h.sf>0;});
+  const pitPlayed=MANAGERS.some(m=>{const q=T[m].p; return q.outs+q.h+q.bb>0;});
+  CATS.forEach((c,ci)=>{
     rows.forEach(r=>{r.vals[c.k]=c.v(T[r.m]);});
     const score=v=>v==null?null:(c.low?-v:v);
     const sc=rows.map(r=>score(r.vals[c.k])).filter(v=>v!=null);
-    // a category nobody has stats in yet isn't decided
-    if(!sc.length||(c.k!=='OPS'&&c.k!=='ERA'&&c.k!=='WHIP'&&rows.every(r=>!r.vals[c.k]))) return;
+    // undecided until games have been played; after that, everyone at 0 is a 3-way tie (owner's rule)
+    if(!sc.length) return;
+    if(c.k!=='OPS'&&c.k!=='ERA'&&c.k!=='WHIP'&&rows.every(r=>!r.vals[c.k])&&!(ci>=5?pitPlayed:hitPlayed)) return;
     const best=Math.max(...sc);
     const leaders=rows.filter(r=>{const v=score(r.vals[c.k]);return v!=null&&Math.abs(v-best)<1e-9;});
     rows.forEach(r=>{
